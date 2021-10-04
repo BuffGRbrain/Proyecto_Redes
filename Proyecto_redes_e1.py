@@ -2,7 +2,7 @@ import random as rd
 import matplotlib.pyplot as plt
 import pandas as pd
 
-SampleRTT
+#SampleRTT
 #time
 
 
@@ -32,5 +32,5 @@ def ewma_calculation(csv,alpha=0.125):
     plt.ylabel('RTT (ms)')
     plt.legend()
     return ewma
-ewma = ewma_calculation(0)
-ewma[:5]
+ewma = ewma_calculation('test.csv')
+print(ewma[:5])
