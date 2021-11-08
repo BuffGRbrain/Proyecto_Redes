@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?><project name="Paper_Redes" company="" webLink="http://" view-date="2021-10-30" view-index="0" gantt-divider-location="550" resource-divider-location="300" version="3.1.3102" locale="en_US">
+<?xml version="1.0" encoding="UTF-8"?><project name="Paper_Redes" company="" webLink="http://" view-date="2021-10-30" view-index="0" gantt-divider-location="550" resource-divider-location="300" version="2.8.11" locale="es">
     <description/>
     <view zooming-state="default:2" id="gantt-chart">
-        <field id="tpd3" name="Name" width="348" order="0"/>
-        <field id="tpd4" name="Begin date" width="46" order="1"/>
-        <field id="tpd5" name="End date" width="152" order="2"/>
+        <field id="tpd3" name="Nombre" width="348" order="0"/>
+        <field id="tpd4" name="Fecha de inicio" width="46" order="1"/>
+        <field id="tpd5" name="Fecha de fin" width="152" order="2"/>
     </view>
     <view id="resource-table">
-        <field id="0" name="Name" width="210" order="0"/>
-        <field id="1" name="Default role" width="86" order="1"/>
+        <field id="0" name="Nombre" width="210" order="0"/>
+        <field id="1" name="Función" width="86" order="1"/>
     </view>
     <!-- -->
     <calendars>
@@ -39,9 +39,7 @@
             <task id="28" name="Estado del arte" meeting="false" start="2021-11-01" duration="6" complete="0" expand="true">
                 <depend id="67" type="2" difference="0" hardness="Strong"/>
                 <task id="29" name="Investigación Inicial estado del arte" color="#8cb6ce" shape="1,1,1,0,1,1,0,0,1,0,0,0,0,0,0,0" meeting="false" start="2021-11-01" duration="5" complete="0" thirdDate="2021-10-26" thirdDate-constraint="0" priority="2" expand="true">
-                    <notes>
-                        <![CDATA[Investigación individual ]]>
-                    </notes>
+                    <notes><![CDATA[Investigación individual ]]></notes>
                     <depend id="70" type="2" difference="0" hardness="Strong"/>
                     <task id="75" name="Resumen + presentación a grupo investigación enfocada" color="#8cb6ce" meeting="false" start="2021-11-01" duration="5" complete="0" thirdDate="2021-10-26" thirdDate-constraint="0" expand="true"/>
                 </task>
@@ -54,14 +52,12 @@
             <task id="20" name="Scripts" color="#000000" meeting="false" start="2021-11-01" duration="19" complete="0" thirdDate="2021-11-01" thirdDate-constraint="0" expand="true">
                 <depend id="51" type="2" difference="0" hardness="Strong"/>
                 <depend id="54" type="2" difference="0" hardness="Strong"/>
-                <task id="21" name="Generar grafo de forma aleatoria" color="#8cb6ce" meeting="false" start="2021-11-01" duration="5" complete="0" thirdDate="2021-10-26" thirdDate-constraint="0" expand="true">
-                    <notes>
-                        <![CDATA[Genera un grafo de entre 15 y 50 nodos y las arístas m = n+(n/2)
+                <task id="21" name="Generar grafo de forma aleatoria" color="#8cb6ce" meeting="false" start="2021-11-01" duration="12" complete="0" thirdDate="2021-10-26" thirdDate-constraint="0" expand="true">
+                    <notes><![CDATA[Genera un grafo de entre 15 y 50 nodos y las arístas m = n+(n/2)
 
 Los pesos de las arístas es un valor aleatoreo entre 1 y 15.
 
-Construir matriz dispersa (Node A || Node B || Cost A-B) (Se asume el primer nodo, como nodo de Origen).]]>
-                    </notes>
+Construir matriz dispersa (Node A || Node B || Cost A-B) (Se asume el primer nodo, como nodo de Origen).]]></notes>
                     <depend id="39" type="2" difference="0" hardness="Strong"/>
                 </task>
                 <task id="23" name="Leer matriz dispersa CSV" color="#8cb6ce" meeting="false" start="2021-11-01" duration="5" complete="0" thirdDate="2021-10-26" thirdDate-constraint="0" expand="true">
@@ -73,10 +69,8 @@ Construir matriz dispersa (Node A || Node B || Cost A-B) (Se asume el primer nod
                 <task id="39" name="Visualización resultados" color="#8cb6ce" meeting="false" start="2021-11-15" duration="7" complete="0" thirdDate="2021-10-26" thirdDate-constraint="0" expand="true"/>
             </task>
             <task id="51" name="Descripción Scripts" color="#8cb6ce" meeting="false" start="2021-11-23" duration="1" complete="0" thirdDate="2021-10-26" thirdDate-constraint="0" expand="true">
-                <notes>
-                    <![CDATA[Incluye diagrama de flujo del programa
-]]>
-                </notes>
+                <notes><![CDATA[Incluye diagrama de flujo del programa
+]]></notes>
             </task>
             <task id="54" name="Conclusiones" color="#8cb6ce" meeting="false" start="2021-11-23" duration="1" complete="0" thirdDate="2021-10-26" thirdDate-constraint="0" expand="true"/>
         </task>
