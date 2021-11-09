@@ -1,26 +1,34 @@
-#from igraph import *
-import igraph
+from igraph import *
 import pandas as pd
 from random import randint
 
-def vecinos(graph: df, node: int) ->list:
+def vecinos(graph, node: int) ->list:
     vecindad = []
     for i in graph:
-        if i[1] == node or i[2] == node:
-            vecindad.append(i)
+        if i[0] == node:
+            vecindad.append(i[1])
+        elif i[1] == node:
+            vecindad.append(i[0])
+    print(node)
+    print(vecindad)
     return vecindad
 
-def DFS(graph: df, revisados: list,  node: int) ->list: #Esta funci[on me suena raro  creo que deberia modificarla como return y la funcion como debe ser una recursvisa
+def DFS(graph, visitados: list,  node: int) ->list:
     if node not in visitados:
         visitados.append(node)
+        print(node)
         for i in vecinos(graph, node):
-            DFS(graph, revisados,i)
+            DFS(graph, visitados,i)
+            #print("visitados")
+            #print(visitados)
+        return visitados
     return visitados
 
-def is_conexo(graph: df,v: list):
+def is_conexo(graph,v: list):
     visitados = []
-    connected_nodes = DFS(graph,visitados,graph[1][1])
+    connected_nodes = DFS(graph,visitados,(graph[1])[1])
     if connected_nodes == v:
+        print("IM CONECTED MFFFFFF")
         return True
     else:
         print("fuuuck otro que no es conexo")
@@ -38,23 +46,24 @@ def gen_graph(n: int) -> list:
             tp = [n1, n2]
             tp.sort() #como ya metimos n1.n2 no queremos que este n2.n1 pues sería una arísta múltiple
             t = [n1, n2, randint(1, 15)]
-            #Se me ocurre que si uno de los dos a agregar ya estaentonces agreguelos
             if a == True and n1 != n2 and tp not in lp:
                 l.append(t)
                 lp.append(tp)
                 a == False
                 break
-            if n1 != n2 and tp not in lp and n1 or n2 in v: #Los numeros deben ser diferentes para evitar bucles
+            if n1 != n2 and tp not in lp and n1 or n2 in v: #Los numeros deben ser diferentes para evitar bucles creo que el and sobra
                 l.append(t)
                 lp.append(tp)
-                v.append(n1,n2)
+                v.append(n1)
+                v.append(n2)
                 break
-    return l
+    return (l,v)
 
 def Conex_graph_generator(n: int): #Genera el grafo hasta que sea conexo
+    vert = []
     while True:
-        graph = gen_graph(n)
-        if is_conexo(gen_graph(n)) == True:
+        (graph, vert)  = gen_graph(n)
+        if is_conexo(graph, vert) == True:
             return graph
 #-------------------------------------------GRAFO Y CSV------------------------------------------------------
 def graph2csv(t) -> None: #Saca el grafo creado en un csv
@@ -73,7 +82,7 @@ def main():
     if int(input('0 - Cargar Grafo \n1 - Generar Grafo \n Seleccion: ')):
         n = randint(15, 50)
         print(n)
-        t = gen_graph(n)
+        t = Conex_graph_generator(n)
         graph2csv(t)
     else:
         a = input('Porfavor ingrese el nombre del archivo de donde se generara el grafo')
