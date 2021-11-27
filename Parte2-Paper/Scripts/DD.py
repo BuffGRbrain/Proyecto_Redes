@@ -188,3 +188,50 @@ def show_path(path):
     print(f'Camino desde {path[1]} hasta {path[-1]}:')
     for i in path:
         print(i, end=' --> ')
+
+
+#Se podrian meter los cambios como una lista de listas en la cual las listas internas esta conformadas por una arista, el peso a el
+#se actualiza y el tiempo en que lo hace.
+
+#Falta el implementar los 2 arboles rojinegros
+cambios = []
+def dyn_dijkstra(graph, pini, pfin, cambios):
+    t = 0
+    tiempos = []
+    for i in cambios:
+        tiempos.append(i[3])
+
+    L = {i: [float('inf'), []] for i in graph.vs["name"]}
+    L[pini] = [0, []]
+    S = []
+    while t not in tiempos:
+        while pfin not in S:
+            vertices_not_in_S = {i: L[i][0] for i in L if i not in S}
+            v_min = min(vertices_not_in_S, key=vertices_not_in_S.get)
+            # S = list(set().union(S, [x]))
+            S.append(v_min)
+            # print(L)
+            for v in graph.vs["name"]:
+                # print(v)
+                if v not in S:
+                    if L[v][0] < L[v_min][0] + get_weight_from_list(graph, v_min, v):
+                        L[v] = [L[v][0], L[v][1]]
+                        t += 1
+                    else:
+                        L[v][1].append(v_min)
+                        L[v] = [L[v_min][0] + get_weight_from_list(graph, v_min, v), L[v][1]]
+                        t += 1
+        path = get_path(L, pini, pfin, [])
+        path = path[::-1]
+        path.append(pfin)
+        if L[pfin][0] == float('inf'):
+            path = []
+        print(f"peso: {L[pfin][0]}")
+        return path
+
+    for i in cambios:
+        if i[3] == t:
+            
+
+        else:
+            continue
