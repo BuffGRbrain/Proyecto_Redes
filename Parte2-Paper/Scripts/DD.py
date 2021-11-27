@@ -132,11 +132,59 @@ def print_tree(node, lines, level=0):
 
 
 
-def main():
-    tree = RBTree()
-    for x in range(1, 51):
-        tree.insert(x)
-    print(tree)
+#def main():
+#    tree = RBTree()
+#    for x in range(1, 51):
+#        tree.insert(x)
+#    print(tree)
 
 
-main()
+#main()
+
+
+
+def get_weight_from_list(G,v1,v2):
+    try:
+        return G.es[G.get_eid(v1, v2)]["weight"]
+    except:
+        return float('inf')
+
+def get_path(L, pini, pfin, current_path=[]):
+    lpfin = L[pfin][1]
+    current_path.append(lpfin[0])
+    if pini in current_path:
+        return current_path
+    return get_path(L, pini, lpfin[0], current_path)
+
+def dijkstra(graph, pini, pfin):
+    L = {i: [float('inf'), []] for i in graph.vs["name"]}
+    L[pini] = [0, []]
+    S = []
+
+    while pfin not in S:
+        vertices_not_in_S = {i: L[i][0] for i in L if i not in S}
+        v_min = min(vertices_not_in_S, key=vertices_not_in_S.get)
+        # S = list(set().union(S, [x]))
+        S.append(v_min)
+        # print(L)
+        for v in graph.vs["name"]:
+            # print(v)
+            if v not in S:
+                if L[v][0] < L[v_min][0] + get_weight_from_list(graph, v_min, v):
+                    L[v] = [L[v][0], L[v][1]]
+                else:
+                    L[v][1].append(v_min)
+                    L[v] = [L[v_min][0] +
+                            get_weight_from_list(graph, v_min, v), L[v][1]]
+    path = get_path(L, pini, pfin, [])
+    path = path[::-1]
+    path.append(pfin)
+    if L[pfin][0] == float('inf'):
+        path = []
+    print(f"peso: {L[pfin][0]}")
+    return path
+
+def show_path(path):
+    print(f'Camino desde {path[1]} hasta {path[-1]}:')
+    for i in path:
+        print(i, end=' --> ')
