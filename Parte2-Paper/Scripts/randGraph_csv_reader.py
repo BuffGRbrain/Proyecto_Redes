@@ -110,9 +110,10 @@ def import_graph(name='graph.csv'):#A partir de un csv crea el grafo falta poner
 
 def main():
     if int(input('0 - Cargar Grafo \n1 - Generar Grafo \n Seleccion: ')):
-        n = randint(0, 36)
+        n = randint(15, 50)
         print(n)
-        t = gen_graph(n)
+        #t = gen_graph(n)
+        t = Conex_graph_generator(n)
         graph2csv(t)
     else:
         a = input('Porfavor ingrese el nombre del archivo de donde se generara el grafo')

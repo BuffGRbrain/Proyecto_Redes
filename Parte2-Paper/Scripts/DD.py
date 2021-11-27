@@ -1,16 +1,16 @@
 import random
 
 
-class RBNode:
+class RBNode: #Genera nodo del arbol rojo negro
     def __init__(self, val):
         self.red = False
         self.parent = None
-        self.val = val
+        self.val = val #Etiqueta
         self.left = None
         self.right = None
 
 
-class RBTree:
+class RBTree: #Inicia con un nodo y se autoblancea nil es hoja
     def __init__(self):
         self.nil = RBNode(0)
         self.nil.red = False
@@ -18,7 +18,7 @@ class RBTree:
         self.nil.right = None
         self.root = self.nil
 
-    def insert(self, val):
+    def insert(self, val): #insert arbol binario normal
         # Ordinary Binary Search Insertion
         new_node = RBNode(val)
         new_node.parent = None
@@ -49,7 +49,7 @@ class RBTree:
         # Fix the tree
         self.fix_insert(new_node)
 
-    def fix_insert(self, new_node):
+    def fix_insert(self, new_node): #Es para termianr el insert para que cumpla las propiedades del arbolrojinegro
         while new_node != self.root and new_node.parent.red:
             if new_node.parent == new_node.parent.parent.right:
                 u = new_node.parent.parent.left  # uncle
@@ -195,12 +195,13 @@ def show_path(path):
 
 #Falta el implementar los 2 arboles rojinegros
 
-cambios = []
-def dyn_dijkstra(graph, pini, pfin, cambios):
+cambios = [] #Ver como representar la arista talvez pueda ser una lista de listas
+def dyn_dijkstra(graph, pini, pfin, cambios): #Falta que reciba t o pensar como devolverlo en el caso 3
     t = 0
     tiempos = []
     for i in cambios:
-        tiempos.append(i[3])
+        if #Si tiempos diferente de vacio hagale de resto saltar.
+        tiempos.append(i[2])
 
     L = {i: [float('inf'), []] for i in graph.vs["name"]}
     L[pini] = [0, []]
@@ -229,9 +230,11 @@ def dyn_dijkstra(graph, pini, pfin, cambios):
             path = []
         print(f"peso: {L[pfin][0]}")
         return path
-
+#Ver como meter esto en el dijkstra son las 3 casos de cambios hacer una funcion por caso esto solo cubre cambios en peso
+#Falta definir borrar aristas y borrar vertices, para borrarla se dispara al inf el peso y para borrar el vertice es lo mismo para todas las incidentes en este}
+#Falta definir como meter una arista y un nodo que no se habian quitado, pq si estan en quitados pues se 
     for i in cambios:
-        if i[3] == t:
+        if i[2] == t:
             #Empezar procedimiento y cuando se llegue a exit se suma 1 a t.
             if ("no se ha calculado distancia por esa arista"):
                 t += 1
@@ -243,6 +246,6 @@ def dyn_dijkstra(graph, pini, pfin, cambios):
                     else:
                         t += 1
                 else:
-                    ("Retroceder las listas a el t anterior a que la arista pasara de not s a s y verificar cambios")                
+                    ("Retroceder las listas a el t anterior a que la arista pasara de not s a s y verificar cambios")
         else:
             continue
