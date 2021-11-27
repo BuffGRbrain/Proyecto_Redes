@@ -194,6 +194,7 @@ def show_path(path):
 #se actualiza y el tiempo en que lo hace.
 
 #Falta el implementar los 2 arboles rojinegros
+
 cambios = []
 def dyn_dijkstra(graph, pini, pfin, cambios):
     t = 0
@@ -231,7 +232,17 @@ def dyn_dijkstra(graph, pini, pfin, cambios):
 
     for i in cambios:
         if i[3] == t:
-            
+            #Empezar procedimiento y cuando se llegue a exit se suma 1 a t.
+            if ("no se ha calculado distancia por esa arista"):
+                t += 1
+            else:
+                if i not in s:
+                    if ("Valor viejo - valor nuevo") > 0:
+                        ("Actualizar valor del vertice en la lista not S y volver a verificar cambios")
 
+                    else:
+                        t += 1
+                else:
+                    ("Retroceder las listas a el t anterior a que la arista pasara de not s a s y verificar cambios")                
         else:
             continue
