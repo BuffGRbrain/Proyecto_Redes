@@ -192,17 +192,16 @@ def show_path(path):
 
 #Se podrian meter los cambios como una lista de listas en la cual las listas internas esta conformadas por una arista, el peso a el
 #se actualiza y el tiempo en que lo hace.
-
+#Creo que cambios puede ser una lista de liustas de 4 elementos, nodo A nodo B peso e iteracion del cambio
 #Falta el implementar los 2 arboles rojinegros
 
 cambios = [] #Ver como representar la arista talvez pueda ser una lista de listas
 def dyn_dijkstra(graph, pini, pfin, cambios): #Falta que reciba t o pensar como devolverlo en el caso 3
-    t = 0
+    iteracion = 0
     tiempos = []
     for i in cambios:
-        if #Si tiempos diferente de vacio hagale de resto saltar.
-        tiempos.append(i[2])
-
+        if len(tiempos) =! 0: #Si tiempos diferente de vacio hagale de resto saltar.
+            tiempos.append(i[2])
     L = {i: [float('inf'), []] for i in graph.vs["name"]}
     L[pini] = [0, []]
     S = []
@@ -222,7 +221,7 @@ def dyn_dijkstra(graph, pini, pfin, cambios): #Falta que reciba t o pensar como 
                     else:
                         L[v][1].append(v_min)
                         L[v] = [L[v_min][0] + get_weight_from_list(graph, v_min, v), L[v][1]]
-                        t += 1
+                        iteracion += 1
         path = get_path(L, pini, pfin, [])
         path = path[::-1]
         path.append(pfin)
@@ -232,7 +231,7 @@ def dyn_dijkstra(graph, pini, pfin, cambios): #Falta que reciba t o pensar como 
         return path
 #Ver como meter esto en el dijkstra son las 3 casos de cambios hacer una funcion por caso esto solo cubre cambios en peso
 #Falta definir borrar aristas y borrar vertices, para borrarla se dispara al inf el peso y para borrar el vertice es lo mismo para todas las incidentes en este}
-#Falta definir como meter una arista y un nodo que no se habian quitado, pq si estan en quitados pues se 
+#Falta definir como meter una arista y un nodo que no se habian quitado, pq si estan en quitados pues se
     for i in cambios:
         if i[2] == t:
             #Empezar procedimiento y cuando se llegue a exit se suma 1 a t.
@@ -249,3 +248,8 @@ def dyn_dijkstra(graph, pini, pfin, cambios): #Falta que reciba t o pensar como 
                     ("Retroceder las listas a el t anterior a que la arista pasara de not s a s y verificar cambios")
         else:
             continue
+def caso1(iteracion): #Arista no esta en priority queue y no afecta el camino que se esta calculando
+    iteracion+=1
+
+
+    return iteracion
