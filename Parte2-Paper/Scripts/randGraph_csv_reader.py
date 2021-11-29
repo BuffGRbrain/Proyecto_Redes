@@ -16,7 +16,7 @@ def vecinos(graph, node: int) ->list:
 def DFS(graph, visitados: list,  node: int) ->list:
     if node not in visitados:
         visitados.append(node)
-        print(node)
+        #print(node)
         for i in vecinos(graph, node):
             DFS(graph, visitados,i)
             print("Visitados en nodo"+str(i) + "Visitados" +str(visitados))
@@ -46,8 +46,8 @@ def gen_graph(n: int) -> list:
     pred = [root]
 
     while len(v) != 0: #Se genera un grafo conexo con n-1 aristas
-        print("while 1")
-        print(v)
+        #print("while 1")
+        #print(v)
         n1 = choice(pred)
         n2 = choice(v) # Nodo desconectado
         tp = [n1, n2]
@@ -59,8 +59,8 @@ def gen_graph(n: int) -> list:
             pred.append(n2) #n2 ya no es un nodo desconectado
             v.remove(n2)
     while len(l) != int(n+n/2): #Este for agrega las aristas restantes
-        print("while 2: ")
-        print(len(l))
+        #print("while 2: ")
+        #print(len(l))
         n1 = choice(pred)
         n2 = choice(pred)
         tp = [n1, n2]
@@ -111,9 +111,9 @@ def import_graph(name='graph.csv'):#A partir de un csv crea el grafo falta poner
 def main():
     if int(input('0 - Cargar Grafo \n1 - Generar Grafo \n Seleccion: ')):
         n = randint(15, 50)
-        print(n)
-        #t = gen_graph(n)
-        t = Conex_graph_generator(n)
+        #print(n)
+        t = gen_graph(n)
+        #t = Conex_graph_generator(n)
         graph2csv(t)
     else:
         a = input('Porfavor ingrese el nombre del archivo de donde se generara el grafo')
@@ -123,9 +123,9 @@ def main():
     g = Graph.TupleList(t, weights=True)
     g.vs["label"] = g.vs["name"]
     g.es["label"] = g.es["weight"]
-
+    #print(list(g.es))
     layout = g.layout("kk")
-    plot(g, layout=layout)
+    #plot(g, layout=layout)
 
 
-main()
+#main()

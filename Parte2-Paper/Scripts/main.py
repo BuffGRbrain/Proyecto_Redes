@@ -1,43 +1,79 @@
 from igraph import *
 from functools import cache
-from DJ import Dijkstra
+from DJ import Dijkstra, get_path, list_graph_path,iteraciones
 import time
 import random
-import * from randGraph_csv_reader.py
+import randGraph_csv_reader as radngraph
+import time
+
+start_time = time.time()
+
 
 def update_graph(G):
-    old_graph_weights = G.es('weight')
+    global iteraciones
+    iteraciones += 1
+    old_graph_weights = G.es['weight']
     na = random.randint(0, len(G.es))
     ae = random.sample(list(G.es), na)
     for i in ae:
-        i['weight'] = random.randint(0, 100000)
-    new_graph_weights = G.es('weight')
-    return old_graph_weights, new_graph_weights
+        i['weight'] = random.randint(0, 15)
+    new_graph_weights = G.es['weight']
+    return G, old_graph_weights, new_graph_weights
 
 def loop_update(G, n):#Falta criterio de parada
+    global iteraciones
+    iteraciones +=1
     a = random.sample(G.vs['name'], 1)
-    while 1:
-        old, new = update_graph(G)
+    old_L, old_S = Dijkstra(G,a[0]) #Dijkstra inicial
+    print_route_tables(G,old_L,a[0])
+    count = 0
+    while count<3:
+        iteraciones += 1
+        G, old, new = update_graph(G) #
         #comparar
-        indices_diferencias = [i for i in len(old)-1 if old[i]!=new[i]] #Da el indice donde los pesos son diferentes
+        indices_diferencias = [i for i in range(len(old)) if old[i]!=new[i]] #Da el indice donde los pesos son diferentes
         #edges = [G.es[i] for i in indices_diferencias] #Para tener las aristas que se cambiaron
-        print(edges) #Esto debe imprimir objetos de igraph
+        #print(edges) #Esto debe imprimir objetos de igraph
         vertices_afectados = set({})
         for i in indices_diferencias:#Para tener los vertices que se cambiaron
+            iteraciones += 1
             vertices_afectados.add(G.es[i].source)
             vertices_afectados.add(G.es[i].target)
 
-
-
-        vertices_afectados2 = set(vertices_afectados)
         print('-----------------')
-        show_weihtges(G)
+        #show_weihtges(G)
         #u = input('Nombre del nodo 1: ')
         #v = input('Nombre del nodo 2: ')
         # a = [u, v]
-        Dijkstra(G, *a,vertices_afectados) #Este terecer input da los vertices afectados
+        old_L, old_S = Dijkstra(G, a[0],vertices_afectados,old_L,old_S) #Este terecer input da los vertices afectados
+        count +=1
+        print_route_tables(G,old_L,a[0],count)
         time.sleep(n)
 
+def print_route_tables(g,L,u,count='inicial'):
+    global iteraciones
+    grafo = g
+    print(f"--- Tabla de enrutamiento {count}-----")
+    print("|Origen| Destino | Remitir paquete a | Peso| ")
+    all_paths = list_graph_path(grafo,u,L)
+    for path in all_paths:
+        iteraciones += 1
+        print(f"|{u}    |{path}       |         {all_paths[path][0][1]}        |  {all_paths[path][1]} |")
+    al = list(all_paths.values())
+    paths = [i[0] for i in al]
+    AU = []
+    for i in paths:
+        for j in range(len(i)-1):
+            iteraciones += 1
+            AU.append(grafo.get_eid(str(i[j]), str(i[j+1])))
+    AU = list(set(AU))
+    AU = [grafo.es[i] for i in AU]
+    NU = [i for i in grafo.es if i not in AU]
+    grafo.delete_edges(NU)
+    layout = grafo.layout("kk")
+    g.vs["label"] = g.vs["name"]
+    g.es["label"] = g.es["weight"]
+    plot(grafo, layout=layout,target= f"Este es el camino más corto en la actualización {count}.png")
 
 def show_weihtges(G):
     for i in G.es:
@@ -70,28 +106,29 @@ def main():
     # update_graph(g)
     # print('--------')
     # show_weihtges(g)
+    print("Bienvenido a este algoritmo. A partir de una red y mediante el uso de grafos, se hallarán las tablas de enrutamiento dinámicamente. \n Atención: Se guardarán imágenes de los grafos y caminos calculados en la misma carpeta.")
     if int(input('0 - Cargar Grafo \n1 - Generar Grafo \n Seleccion: ')):
-        n = int(input("Porfavor ingrese el numero de nodos del grafo de 15 a 50"))
-        print(n)
-        t  = gen_graph(n)
+        n = int(input("Por favor ingrese el numero de nodos del grafo de 15 a 50: "))
+        #print(n)
+        t  = radngraph.gen_graph(n)
         t2 = [(str(i[0]), str(i[1]), i[2]) for i in t]
-        g = Graph.TupleList(t2, weights=True)
-        loop_update(g, 2)
         #t = Conex_graph_generator(n)
-        print(t)
-        graph2csv(t)
+        #print(t)
+        radngraph.graph2csv(t)
     else:
-        a = input('Porfavor ingrese el nombre del archivo de donde se generara el grafo')
+        a = input('Por favor ingrese el nombre del archivo de donde se generara el grafo(sin ".csv"): ')
         b = a + '.csv'
-        t = import_graph(b)
-    #Visualización
-    g = Graph.TupleList(t, weights=True)
+        t = radngraph.import_graph(b)
+        t2 = [(str(i[0]), str(i[1]), i[2]) for i in t]
+
+    g = Graph.TupleList(t2, weights=True)
     g.vs["label"] = g.vs["name"]
     g.es["label"] = g.es["weight"]
-
     layout = g.layout("kk")
-    plot(g, layout=layout)
-
+    plot(g, layout=layout,target="Estado de la red inicial.png")
+    loop_update(g, 2)
+    print(f"Total iteraciones = {iteraciones}")
+    print("--- %s seconds ---" % (time.time() - start_time-4*2)) #Se restan 4*2 segundos porque ese fue el tiempo de espera para cambiar la información de las aristas.
 
 if __name__ == '__main__':
     main()

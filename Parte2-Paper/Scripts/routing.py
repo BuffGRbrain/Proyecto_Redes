@@ -8,7 +8,7 @@ class RBNode:
         self.val = val
         self.left = None
         self.right = None
-
+        self.info = None
 
 class RBTree:
     def __init__(self):
@@ -18,13 +18,14 @@ class RBTree:
         self.nil.right = None
         self.root = self.nil
 
-    def insert(self, val):
+    def insert(self, val,info):
         # Ordinary Binary Search Insertion
         new_node = RBNode(val)
         new_node.parent = None
         new_node.left = self.nil
         new_node.right = self.nil
         new_node.red = True  # new node must be red
+        new_node.info = info
 
         parent = None
         current = self.root
@@ -152,14 +153,3 @@ def main():
     for x in range(1, 51):
         tree.insert(x)
     print(tree)
-
-
-#main()
-import heapq
-li = [5, 7, 9, 1, 3]
-
-# using heapify to convert list into heap
-heapq.heapify(li)
-print(li)
-
-#Suerte con el codigo cualquier cosa me decis att cali
