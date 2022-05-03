@@ -38,7 +38,7 @@ def w(G, x, v):
         return float('inf')
 
 
-def full_graph_path(G, u, L):
+"""def full_graph_path(G, u, L):
     l = list(G.vs['name'])
     #print(L)
     l.remove(str(u))
@@ -48,7 +48,7 @@ def full_graph_path(G, u, L):
         path.append(i)
         if L[i][0] == float('inf'):
             path = []
-        #print(f'{u} -- {i}: {path} w = {L[i][0]}')
+        #print(f'{u} -- {i}: {path} w = {L[i][0]}') """
 
 def list_graph_path(G, u, L):
     all_paths={}
