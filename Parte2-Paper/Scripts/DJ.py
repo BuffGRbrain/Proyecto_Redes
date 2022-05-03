@@ -16,22 +16,21 @@ iteraciones = 0
 #    return positions
 
 
-#Esta funcion nos pide un grafo L en formato lista de nodos con sublistas de las aristas de cada nodo, un nodo de origen u, 
-#un nodo de llegada z y una r vacia donde vamos a ir guardando la ruta. Esta funcion nos halla un camino cualquiera entre
-#u y z.
+#Esta funcion nos pide un grafo L en formato diccionario en el cual las llaves son el nombre del nodo y los valores asociados 
+#son una lista con el peso y nodo de llegada de la arista. Esta funcion nos halla un camino cualquiera entre u y z.
 
 def get_path(L, u, z, r=[]):
     global iteraciones
     iteraciones +=1
     #print(u)
     #print(z)
-    lz = L[z][1] #Selecciono la primera arista de mi nodo de llegada
+    lz = L[z][1] #Selecciono la primera arista de mi nodo de llegada.
     #print(L)
     #print(lz,"---")
-    r.append(lz[-1]) #Aqui agrego el nodo anterior a mi nodo de llegada
+    r.append(lz[-1]) #Aqui agrego el nodo anterior a mi nodo de llegada.
     if u in r:
-        return r #Termina si el nodo de origen entra en la lista de aristas de la ruta
-    return get_path(L, u, lz[-1], r) #Si el nodo de origen aun no esta en r se repite procedimiento con el nodo obtenido
+        return r #Termina si el nodo de origen entra en la lista de aristas de la ruta. Retorna el camino de z a u.
+    return get_path(L, u, lz[-1], r) #Si el nodo de origen aun no esta en r se repite procedimiento con el nodo obtenido.
 
 
 #Esta funcion nos pide un grafo G en formato normal de iGraph y 2 nodos con arista en medio. Nos halla el peso de la arista
@@ -42,9 +41,9 @@ def w(G, x, v):
     #print(list(G.vs))
     try:
     #print(type(x))
-        return G.es[G.get_eid(x, v)]["weight"] #Halla el peso directamente si hay una arista entre estos nodos
+        return G.es[G.get_eid(x, v)]["weight"] #Halla el peso directamente si hay una arista entre estos nodos.
     except:
-        return float('inf') #Si no hay arista entre ellos entonces el peso es infinito
+        return float('inf') #Si no hay arista entre ellos entonces el peso es infinito.
 
 
 """def full_graph_path(G, u, L):
@@ -59,16 +58,19 @@ def w(G, x, v):
             path = []
         #print(f'{u} -- {i}: {path} w = {L[i][0]}') """
 
+#Nos pide un grafo G, un nodo L y el grafo en formato lista de nodos con sus aristas L y nos halla caminos hacia todos los nodos
+#desde u aplicando get_path para cada uno.
+
 def list_graph_path(G, u, L):
     all_paths={}
-    l = list(G.vs['name'])
-    l.remove(str(u))
+    l = list(G.vs['name']) #Lista en la cual tenemos los nodos del grafo.
+    l.remove(str(u)) #Eliminamos el nodo de inicio de los nodos a revisar.
     for i in l:
         global iteraciones
         iteraciones +=1
-        path = get_path(L, str(u), str(i), [])
-        path = path[::-1]
-        path.append(i)
+        path = get_path(L, str(u), str(i), []) #Hallar caminos de u a todos los nodos con get_path.
+        path = path[::-1] #Se invierte el camino al get_path retornar la lista de la ruta al reves.
+        path.append(i) #Se agrega el nodo de llegada a la lista ya que get_path hace la lista sin el.
         if L[i][0] == float('inf'):
             path = []
         all_paths[i] = [path,L[i][0]]
