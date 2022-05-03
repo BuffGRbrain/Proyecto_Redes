@@ -34,14 +34,17 @@ def get_path(L, u, z, r=[]):
     return get_path(L, u, lz[-1], r) #Si el nodo de origen aun no esta en r se repite procedimiento con el nodo obtenido
 
 
+#Esta funcion nos pide un grafo G en formato normal de iGraph y 2 nodos con arista en medio. Nos halla el peso de la arista
+#entre estos nodos.
+
 def w(G, x, v):
     #print(G.get_eid(v, x))
     #print(list(G.vs))
     try:
     #print(type(x))
-        return G.es[G.get_eid(x, v)]["weight"]
+        return G.es[G.get_eid(x, v)]["weight"] #Halla el peso directamente si hay una arista entre estos nodos
     except:
-        return float('inf')
+        return float('inf') #Si no hay arista entre ellos entonces el peso es infinito
 
 
 """def full_graph_path(G, u, L):
