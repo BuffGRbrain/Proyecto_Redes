@@ -14,18 +14,24 @@ iteraciones = 0
 #            positions.append(k)
 #
 #    return positions
+
+
+#Esta funcion nos pide un grafo L en formato lista de nodos con sublistas de las aristas de cada nodo, un nodo de origen u, 
+#un nodo de llegada z y una r vacia donde vamos a ir guardando la ruta. Esta funcion nos halla un camino cualquiera entre
+#u y z.
+
 def get_path(L, u, z, r=[]):
     global iteraciones
     iteraciones +=1
     #print(u)
     #print(z)
-    lz = L[z][1]
+    lz = L[z][1] #Selecciono la primera arista de mi nodo de llegada
     #print(L)
     #print(lz,"---")
-    r.append(lz[-1])
+    r.append(lz[-1]) #Aqui agrego el nodo anterior a mi nodo de llegada
     if u in r:
-        return r
-    return get_path(L, u, lz[-1], r)
+        return r #Termina si el nodo de origen entra en la lista de aristas de la ruta
+    return get_path(L, u, lz[-1], r) #Si el nodo de origen aun no esta en r se repite procedimiento con el nodo obtenido
 
 
 def w(G, x, v):
