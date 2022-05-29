@@ -73,6 +73,7 @@ def list_graph_path(G, u, L):
         path.append(i) #Se agrega el nodo de llegada a la lista ya que get_path hace la lista sin el.
         if L[i][0] == float('inf'):
             path = []
+            
         all_paths[i] = [path,L[i][0]]
     return all_paths
 
