@@ -47,26 +47,28 @@ def list_graph_path(G, u, L):
         all_paths[i] = [path,L[i][0]]
     return all_paths
 
+#Input: G graph from iGraph, u an origin node and some boolean parameters that idk.
+#Output: l a list of lists that represent the graph using the sparse matrix nodeA||nodeB||weight where A and B are adjacent nodes.
+
 def Dijkstra(G, u, affected_nodes = True, old_S = True, old_L = True):
-    # Comprobar cuál es la arista que afecta primero el Dijkstra anterior
     global iteraciones
     if old_S:
-        L = {i: [float('inf'), []] for i in G.vs["name"]}
-        L[str(u)] = [0, []]
-        S = [str(u)]
+        L = {i: [float('inf'), []] for i in G.vs["name"]} #Initializes all distances from u to any node in infinite.
+        L[str(u)] = [0, []] #Changes value of distance from u to u to 0.
+        S = [str(u)] #Now we append u to the list of checked nodes.
     else:
         for node in old_S:
             if node in affected_nodes:
-                    S = old_S[0:int(old_S.index(node)+1)]
+                    S = old_S[0:int(old_S.index(node)+1)]  #No fucking idea whats happening here.
                     L = {i: L[i] for i in S}
     start = 1
     while 1:
-        L_S = {i: L[i][0] for i in L if i not in S}
-        if not L_S:
-            break
-        if start:
-            x = u
-            start = 0
+        L_S = {i: L[i][0] for i in L if i not in S} #Append to L_S all the nodes in L that have not been checked.
+        if not L_S: #If all nodes have been checked, it breaks, if not it continues.
+            break 
+        if start:#Maybe add elif ask Leyva. If we are in the first node, we asign u to x. 
+            x = u #x will be the node whose edges will be checked.
+            start = 0 #Changing start to 0 because we will no longer be in the first node.
         else:
             x = min(L_S, key=L_S.get)
             S.append(x)
@@ -74,18 +76,9 @@ def Dijkstra(G, u, affected_nodes = True, old_S = True, old_L = True):
         for v in G.vs["name"]:
             iteraciones +=1
             if v not in S:
-                #print("----")
-                #print(type(u))
-                #print(S)
-                #print(v)
-                #print(v not in S)
-                #print("----")
                 if L[str(v)][0] >= L[str(x)][0] + w(G, str(x), str(v)):
-                    #print(x,v)
-                    #print(w(G, str(x), str(v)))
                     L[str(v)][1].append(str(x))
                     L[str(v)] = [L[str(x)][0] + w(G, str(x), str(v)), L[str(v)][1]]
-    #full_graph_path(G, u, L)
     return L,S
 
 def actualizar_Dijkstra():
