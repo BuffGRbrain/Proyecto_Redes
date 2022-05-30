@@ -1,41 +1,7 @@
+from tkinter import W
 from igraph import *
 import pandas as pd
 from random import *
-
-def vecinos(graph, node: int) ->list:
-    vecindad = []
-    for i in graph:
-        if i[0] == node:
-            vecindad.append(i[1])
-        elif i[1] == node:
-            vecindad.append(i[0])
-    print("Nodo" + str(node))
-    print("vecindad" + str(vecindad))
-    return vecindad
-
-def DFS(graph, visitados: list,  node: int) ->list:
-    if node not in visitados:
-        visitados.append(node)
-        #print(node)
-        for i in vecinos(graph, node):
-            DFS(graph, visitados,i)
-            print("Visitados en nodo"+str(i) + "Visitados" +str(visitados))
-        visitados = eliminar_repetidos(visitados)
-        return visitados
-    visitados = eliminar_repetidos(visitados)
-    return visitados
-
-def is_conexo(graph,v: list):
-    visitados = []
-    connected_nodes = DFS(graph,visitados,(graph[0])[0])
-    if connected_nodes == v:
-        print("IM CONECTED MFFFFFF")
-        return True
-    else:
-        print("Conexos"+str(connected_nodes)+"\n")
-        print("Vertices"+str(v)+"\n")
-        print("fuuuck otro que no es conexo")
-        return False
 
 def gen_graph(n: int) -> list:
     l = [] #Lista de listas que representan el grafo en forma de la matriz dispersa, nodoA||nodoB||peso
@@ -78,23 +44,6 @@ def gen_graph(n: int) -> list:
     #print(v3)
     #print("-----------------------------------------------------------------------------------------------------------")
     return l
-
-def eliminar_repetidos(v: list):
-    v2 = []
-    for i in v:
-        if i not in v2:
-            v2.append(i)
-    v1 = v.sort()
-    print("VERTICES SIN REPETIDOS" + str(v2))
-    return v2 #Debo quitar los repetidos de la lista de vertices que supongo que por DFS se aumenta not sure
-
-def Conex_graph_generator(n: int): #Genera el grafo hasta que sea conexo
-    vert = []
-    while True:
-        (graph, vert)  = gen_graph(n)
-        vert2 = eliminar_repetidos(vert)
-        if is_conexo(graph, vert2) == True:
-            return graph
 #-------------------------------------------GRAFO Y CSV------------------------------------------------------
 def graph2csv(t) -> None: #Saca el grafo creado en un csv
     df = pd.DataFrame(t)

@@ -6,7 +6,7 @@ iteraciones = 0
 
 
 
-#This function request an L graph in dictionary format in which the keys are the node name and the values are a list with the
+#This function request an L graph in dictionary format in which the keys are the node name, and the values are a list with the
 #weight and destiny node of the edge. This function finds a path between u and z.
 
 def get_path(L, u, z, r=[]):
@@ -14,14 +14,14 @@ def get_path(L, u, z, r=[]):
     iteraciones +=1
     
     
-    lz = L[z][1] #It select the first edge of the destiny node.
+    lz = L[z][1] #It selects the first edge of the destiny node.
     r.append(lz[-1]) #Here it appends the previous node of the destiny node.
     if u in r:
         return r #It ends if the origin node enters in the list of the route edges. Returns the path from z to u.
     return get_path(L, u, lz[-1], r) #If the origin node isn't in r, the procedure repeats with the obtained node.
 
 
-#This function asks for a graph G in iGraph normal format and 2 nodes with and edge between them. 
+#This function asks for a graph G in iGraph normal format and 2 nodes with and edge between them (adjacent). 
 #This finds the weight of the edge between the nodes.
 
 def w(G, x, v):
@@ -43,19 +43,19 @@ def w(G, x, v):
             path = []
         #print(f'{u} -- {i}: {path} w = {L[i][0]}') """
 
-#Nos pide un grafo G, un nodo L y el grafo en formato lista de nodos con sus aristas L y nos halla caminos hacia todos los nodos
-#desde u aplicando get_path para cada uno.
+#Input:G graph from igraph, u a node in L and L is a list of lists each one with the node and its connected edges.
+#Output: Path from U to each node in the graph using the function get_path.
 
 def list_graph_path(G, u, L):
     all_paths={}
-    l = list(G.vs['name']) #Lista en la cual tenemos los nodos del grafo.
-    l.remove(str(u)) #Eliminamos el nodo de inicio de los nodos a revisar.
+    l = list(G.vs['name']) #List in which we have all the nodes of the graph.
+    l.remove(str(u)) #Delete the initial node from the nodes to check.
     for i in l:
         global iteraciones
         iteraciones +=1
-        path = get_path(L, str(u), str(i), []) #Hallar caminos de u a todos los nodos con get_path.
-        path = path[::-1] #Se invierte el camino al get_path retornar la lista de la ruta al reves.
-        path.append(i) #Se agrega el nodo de llegada a la lista ya que get_path hace la lista sin el.
+        path = get_path(L, str(u), str(i), []) #Find paths from u to all the nodes with get_path.
+        path = path[::-1] #It inverse the path, this because geth_path returns the route list backwards.
+        path.append(i) #Appends the destiny node to the list because get_path makes the list without him.
         if L[i][0] == float('inf'):
             path = []
             

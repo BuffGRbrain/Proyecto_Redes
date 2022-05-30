@@ -8,7 +8,7 @@ import randGraph_csv_reader as radngraph
 import time
 
 start_time = time.time()
-
+#This code requieres igraph 0.9.8
 
 def update_graph(G):
     global iteraciones
