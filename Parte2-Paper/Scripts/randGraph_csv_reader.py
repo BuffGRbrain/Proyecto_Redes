@@ -3,6 +3,8 @@ from igraph import *
 import pandas as pd
 from random import *
 
+#Input: n an integer that represents the number of nodes the graph will have.
+#Output: l a list of lists that represent the graph using the sparse matrix nodeA||nodeB||weight where A and B are adjacent nodes.
 def gen_graph(n: int) -> list:
     l = [] #Lista de listas que representan el grafo en forma de la matriz dispersa, nodoA||nodoB||peso
     lp = []#||Lista para evitar arístas múltiples

@@ -1,10 +1,6 @@
 from igraph import *
 
-
-
 iteraciones = 0
-
-
 
 #This function request an L graph in dictionary format in which the keys are the node name, and the values are a list with the
 #weight and destiny node of the edge. This function finds a path between u and z.
@@ -13,12 +9,12 @@ def get_path(L, u, z, r=[]):
     global iteraciones
     iteraciones +=1
     
-    
     lz = L[z][1] #It selects the first edge of the destiny node.
     r.append(lz[-1]) #Here it appends the previous node of the destiny node.
     if u in r:
         return r #It ends if the origin node enters in the list of the route edges. Returns the path from z to u.
     return get_path(L, u, lz[-1], r) #If the origin node isn't in r, the procedure repeats with the obtained node.
+
 
 
 #This function asks for a graph G in iGraph normal format and 2 nodes with and edge between them (adjacent). 
@@ -31,17 +27,6 @@ def w(G, x, v):
         return float('inf') #If there is no edge exists between the nodes this returns infinite.
 
 
-"""def full_graph_path(G, u, L):
-    l = list(G.vs['name'])
-    #print(L)
-    l.remove(str(u))
-    for i in l:
-        path = get_path(L, u, i, [])
-        path = path[::-1]
-        path.append(i)
-        if L[i][0] == float('inf'):
-            path = []
-        #print(f'{u} -- {i}: {path} w = {L[i][0]}') """
 
 #Input:G graph from igraph, u a node in L and L is a list of lists each one with the node and its connected edges.
 #Output: Path from U to each node in the graph using the function get_path.
