@@ -1,3 +1,4 @@
+from matplotlib.pyplot import plot
 from igraph import *
 from functools import cache
 from DJ import Dijkstra, get_path, list_graph_path,iteraciones

@@ -1,5 +1,5 @@
 from igraph import *
-from routing import RBNode,RBTree
+#from routing import RBNode,RBTree
 iteraciones = 0
 # def minimums(some_dict):
 #    # Tomada de Stackoverflow
