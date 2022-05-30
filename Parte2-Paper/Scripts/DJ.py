@@ -1,49 +1,34 @@
 from igraph import *
-#from routing import RBNode,RBTree
+
+
+
 iteraciones = 0
-# def minimums(some_dict):
-#    # Tomada de Stackoverflow
-#    positions = []  # output variable
-#    min_value = float("inf")
-#    for k, v in some_dict.items():
-#        if v == min_value:
-#            positions.append(k)
-#        if v < min_value:
-#            min_value = v
-#            positions = []  # output variable
-#            positions.append(k)
-#
-#    return positions
 
 
-#Esta funcion nos pide un grafo L en formato diccionario en el cual las llaves son el nombre del nodo y los valores asociados 
-#son una lista con el peso y nodo de llegada de la arista. Esta funcion nos halla un camino cualquiera entre u y z.
+
+#This function request an L graph in dictionary format in which the keys are the node name and the values are a list with the
+#weight and destiny node of the edge. This function finds a path between u and z.
 
 def get_path(L, u, z, r=[]):
     global iteraciones
     iteraciones +=1
-    #print(u)
-    #print(z)
-    lz = L[z][1] #Selecciono la primera arista de mi nodo de llegada.
-    #print(L)
-    #print(lz,"---")
-    r.append(lz[-1]) #Aqui agrego el nodo anterior a mi nodo de llegada.
+    
+    
+    lz = L[z][1] #It select the first edge of the destiny node.
+    r.append(lz[-1]) #Here it appends the previous node of the destiny node.
     if u in r:
-        return r #Termina si el nodo de origen entra en la lista de aristas de la ruta. Retorna el camino de z a u.
-    return get_path(L, u, lz[-1], r) #Si el nodo de origen aun no esta en r se repite procedimiento con el nodo obtenido.
+        return r #It ends if the origin node enters in the list of the route edges. Returns the path from z to u.
+    return get_path(L, u, lz[-1], r) #If the origin node isn't in r, the procedure repeats with the obtained node.
 
 
-#Esta funcion nos pide un grafo G en formato normal de iGraph y 2 nodos con arista en medio. Nos halla el peso de la arista
-#entre estos nodos.
+#This function asks for a graph G in iGraph normal format and 2 nodes with and edge between them. 
+#This finds the weight of the edge between the nodes.
 
 def w(G, x, v):
-    #print(G.get_eid(v, x))
-    #print(list(G.vs))
     try:
-    #print(type(x))
-        return G.es[G.get_eid(x, v)]["weight"] #Halla el peso directamente si hay una arista entre estos nodos.
+        return G.es[G.get_eid(x, v)]["weight"] #If an edge exists between the nodes this finds the weight of it.
     except:
-        return float('inf') #Si no hay arista entre ellos entonces el peso es infinito.
+        return float('inf') #If there is no edge exists between the nodes this returns infinite.
 
 
 """def full_graph_path(G, u, L):
@@ -89,12 +74,9 @@ def Dijkstra(G, u, affected_nodes = True, old_S = True, old_L = True):
             if node in affected_nodes:
                     S = old_S[0:int(old_S.index(node)+1)]
                     L = {i: L[i] for i in S}
-    #arbol = RB.Tree()
     start = 1
     while 1:
         L_S = {i: L[i][0] for i in L if i not in S}
-        #print(L_S)
-        #print(L)
         if not L_S:
             break
         if start:
