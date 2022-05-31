@@ -7,20 +7,26 @@ import random
 import randGraph_csv_reader as radngraph
 import time
 
-start_time = time.time()
+
 #This code requieres igraph 0.9.8
 
+start_time = time.time() #Starts the stopwatch to see how much time it took to execute and get the desired result
+
+#Input: G a graph from igraph
+#Output: G a graph from igraph updated, old_graph_weights and new_graph_weights to see the changes CHECK
 def update_graph(G):
-    global iteraciones
+    global iteraciones #Number of total iterations in the code till the desired ouput was obtained
     iteraciones += 1
-    old_graph_weights = G.es['weight']
-    na = random.randint(0, len(G.es))
-    ae = random.sample(list(G.es), na)
-    for i in ae:
-        i['weight'] = random.randint(0, 15)
-    new_graph_weights = G.es['weight']
+    old_graph_weights = G.es['weight'] #Saves the old weights of the graph
+    na = random.randint(0, len(G.es)) #random number  between 0 and the number of nodes the graph has
+    ae = random.sample(list(G.es), na) #list->random size sample of edges of the graph 
+    for i in ae: #Changes the weights randomly of the random sized sample created in ae
+        i['weight'] = random.randint(0, 15) 
+    new_graph_weights = G.es['weight'] #Saves the new weights of the graph
     return G, old_graph_weights, new_graph_weights
 
+#Input: G graph from igraph, n number of nodes
+#Output: None in python, 
 def loop_update(G, n):#Falta criterio de parada
     global iteraciones
     iteraciones +=1
@@ -51,7 +57,9 @@ def loop_update(G, n):#Falta criterio de parada
         print_route_tables(G,old_L,a[0],count)
         time.sleep(n)
 
-def print_route_tables(g,L,u,count='inicial'):
+#Input:
+#Output:
+def print_route_tables(g,L,u,count='inicial'): 
     global iteraciones
     grafo = g
     print(f"--- Tabla de enrutamiento {count}-----")

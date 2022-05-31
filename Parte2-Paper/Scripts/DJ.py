@@ -59,26 +59,27 @@ def Dijkstra(G, u, affected_nodes = True, old_S = True, old_L = True):
     else:
         for node in old_S:
             if node in affected_nodes:
-                    S = old_S[0:int(old_S.index(node)+1)]  #No fucking idea whats happening here.
+                    S = old_S[0:int(old_S.index(node)+1)]  #IDFK No fucking idea whats happening here but this is for the dynamic case.
                     L = {i: L[i] for i in S}
     start = 1
     while 1:
         L_S = {i: L[i][0] for i in L if i not in S} #Append to L_S all the nodes in L that have not been checked.
         if not L_S: #If all nodes have been checked, it breaks, if not it continues.
             break 
-        if start:#Maybe add elif ask Leyva. If we are in the first node, we asign u to x. 
+        if start: #If we are in the first node, we asign u to x. 
             x = u #x will be the node whose edges will be checked.
             start = 0 #Changing start to 0 because we will no longer be in the first node.
         else:
-            x = min(L_S, key=L_S.get)
+            x = min(L_S, key=L_S.get) #Minimum of the weights
             S.append(x)
 
-        for v in G.vs["name"]:
+        for v in G.vs["name"]: #For all the nodes in G.
             iteraciones +=1
-            if v not in S:
-                if L[str(v)][0] >= L[str(x)][0] + w(G, str(x), str(v)):
+            if v not in S: #If v hasn't been checked.
+                if L[str(v)][0] > L[str(x)][0] + w(G, str(x), str(v)) and L[str(v)][0]!= float('inf') and L[str(x)][0] != float('inf'): #Mirar el caso de nodos no conectados al origen.
                     L[str(v)][1].append(str(x))
-                    L[str(v)] = [L[str(x)][0] + w(G, str(x), str(v)), L[str(v)][1]]
+                    #L[str(v)] = [L[str(x)][0] + w(G, str(x), str(v)), L[str(v)][1]]#Updates weight of the edge and adds the route
+                    L[str(v)][0] = L[str(x)][0] + w(G, str(x), str(v))
     return L,S
 
 def actualizar_Dijkstra():
