@@ -76,7 +76,7 @@ def Dijkstra(G, u, affected_nodes = True, old_S = True, old_L = True):
         for v in G.vs["name"]: #For all the nodes in G.
             iteraciones +=1
             if v not in S: #If v hasn't been checked.
-                if L[str(v)][0] > L[str(x)][0] + w(G, str(x), str(v)) and L[str(v)][0]!= float('inf') and L[str(x)][0] != float('inf'): #Mirar el caso de nodos no conectados al origen.
+                if L[str(v)][0] > L[str(x)][0] + w(G, str(x), str(v)):# and L[str(v)][0]!= float('inf') and L[str(x)][0] != float('inf'): #Mirar el caso de nodos no conectados al origen.
                     L[str(v)][1].append(str(x))
                     #L[str(v)] = [L[str(x)][0] + w(G, str(x), str(v)), L[str(v)][1]]#Updates weight of the edge and adds the route
                     L[str(v)][0] = L[str(x)][0] + w(G, str(x), str(v))
