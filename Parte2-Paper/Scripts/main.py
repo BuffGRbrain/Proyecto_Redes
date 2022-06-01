@@ -1,9 +1,11 @@
+#!/usr/bin/python3
 from tokenize import Double
 from matplotlib.pyplot import plot
 from igraph import *
 from functools import cache
 from DJ import Dijkstra, get_path, list_graph_path,iteraciones
 import time
+import json
 import random
 import randGraph_csv_reader as radngraph
 import time
@@ -92,17 +94,20 @@ def print_route_tables(g,L,u,count='inicial'):
 
 
 def main():
+    with open("config.json", 'r') as f:
+        config = json.loads(f.read())
+
     print("Bienvenido a este algoritmo. A partir de una red y mediante el uso de grafos, se hallarán las tablas de enrutamiento dinámicamente. \n Atención: Se guardarán imágenes de los grafos y caminos calculados en la misma carpeta.")
-    if int(input('0 - Cargar Grafo \n1 - Generar Grafo \n Seleccion: ')):
-        n = int(input("Por favor ingrese el numero de nodos del grafo de 15 a 50: "))
-        changes = int(input("Ingrese el número de cambios a realizar"))#Falta pasarselo al loop_update 
+    if bool(config["generate_graph"]):
+        n = config["nodes"]
+        # changes = int(input("Ingrese el número de cambios a realizar"))#Falta pasarselo al loop_update 
         t  = radngraph.gen_graph(n)
         t2 = [(str(i[0]), str(i[1]), i[2]) for i in t]
         radngraph.graph2csv(t)
     else:
-        a = input('Por favor ingrese el nombre del archivo de donde se generara el grafo(sin ".csv"): ')
-        b = a + '.csv'
-        t = radngraph.import_graph(b)
+        # a = input('Por favor ingrese el nombre del archivo de donde se generara el grafo(sin ".csv"): ')
+        # b = a + '.csv'
+        t = radngraph.import_graph(config["filename"] +".csv")
         t2 = [(str(i[0]), str(i[1]), i[2]) for i in t]
 
     g = Graph.TupleList(t2, weights=True)
@@ -110,7 +115,7 @@ def main():
     g.es["label"] = g.es["weight"]
     layout = g.layout("kk")
     plot(g, layout=layout,target="Estado de la red inicial.png")
-    loop_update(g, 2)
+    loop_update(g, 2, config["changes"])
     print(f"Total iteraciones = {iteraciones}")
     print("--- %s seconds ---" % (time.time() - start_time-4*2)) #Se restan 4*2 segundos porque ese fue el tiempo de espera para cambiar la información de las aristas.
 
