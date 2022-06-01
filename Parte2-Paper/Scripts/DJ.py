@@ -29,7 +29,7 @@ def w(G, x, v):
 
 
 
-#Input:G graph from igraph, u a node in L and L is a list of lists each one with the node and its connected edges.
+#Input:G graph from igraph, u a node in L and L is a dictionary in which the keys are the nodes and the values are a weight and destiny node of the edge.
 #Output: Path from U to each node in the graph using the function get_path in a dictionary where keys are the name of the nodes 
 #and the values are a list of 2 elements: 1.List of the path from u to z. 2 .Total weight of going from u to z using the given path.
 
