@@ -2,8 +2,8 @@ from igraph import *
 
 iteraciones = 0
 
-#This function request an L graph in dictionary format in which the keys are the node name, and the values are a list with the
-#weight and destiny node of the edge. This function finds a path between u and z.
+#Input: Graph L in dictionary format, initial node u, destiny node z.
+#Ouput: r a list of the nodes form the origin to the destiny node.
 
 def get_path(L, u, z, r=[]):
     global iteraciones
@@ -17,8 +17,9 @@ def get_path(L, u, z, r=[]):
 
 
 
-#This function asks for a graph G in iGraph normal format and 2 nodes with and edge between them (adjacent). 
-#This finds the weight of the edge between the nodes.
+
+#Input: Graph G in iGraph format, node x and node v of the graph.
+#Output: The weight of the edge between these nodes.
 
 def w(G, x, v):
     try:
@@ -29,10 +30,11 @@ def w(G, x, v):
 
 
 #Input:G graph from igraph, u a node in L and L is a list of lists each one with the node and its connected edges.
-#Output: Path from U to each node in the graph using the function get_path.
+#Output: Path from U to each node in the graph using the function get_path in a dictionary where keys are the name of the nodes 
+#and the values are a list of 2 elements: 1.List of the path from u to z. 2 .Total weight of going from u to z using the given path.
 
 def list_graph_path(G, u, L):
-    all_paths={}
+    all_paths={} #Dictionary with keys as the name of the node and values the path from u top that node.
     l = list(G.vs['name']) #List in which we have all the nodes of the graph.
     l.remove(str(u)) #Delete the initial node from the nodes to check.
     for i in l:
@@ -41,11 +43,11 @@ def list_graph_path(G, u, L):
         path = get_path(L, str(u), str(i), []) #Find paths from u to all the nodes with get_path.
         path = path[::-1] #It inverse the path, this because geth_path returns the route list backwards.
         path.append(i) #Appends the destiny node to the list because get_path makes the list without him.
-        if L[i][0] == float('inf'):
+        if L[i][0] == 0: #Float(inf). If the weight of the path is 0 is because there isn't any.
             path = []
             
-        all_paths[i] = [path,L[i][0]]
-    return all_paths
+        all_paths[i] = [path,L[i][0]] #Assign a path and a weight to their respective nodes.
+    return all_paths 
 
 #Input: G graph from iGraph, u an origin node and some boolean parameters that idk.
 #Output: l a list of lists that represent the graph using the sparse matrix nodeA||nodeB||weight where A and B are adjacent nodes.
@@ -57,10 +59,11 @@ def Dijkstra(G, u, affected_nodes = True, old_S = True, old_L = True):
         L[str(u)] = [0, []] #Changes value of distance from u to u to 0.
         S = [str(u)] #Now we append u to the list of checked nodes.
     else:
-        for node in old_S:
-            if node in affected_nodes:
-                    S = old_S[0:int(old_S.index(node)+1)]  #IDFK No fucking idea whats happening here but this is for the dynamic case.
-                    L = {i: L[i] for i in S}
+        #When we have to recalculate due to changes we use this case in which affected nodes is a set({}) of the affected nodes
+        for node in old_S: #For each node in the past revision in the past dijkstra
+            if node in affected_nodes:#for each affected node we make the recalculation
+                    S = old_S[0:int(old_S.index(node)+1)]  #Creates the S list of checked nodes, usign slices and "cutting off" the affected nodes to be checked again
+                    L = {i: old_L[i] for i in S} #Saves the past weights that where not affected by the update in the graph, reducing calculations
     start = 1
     while 1:
         L_S = {i: L[i][0] for i in L if i not in S} #Append to L_S all the nodes in L that have not been checked.
@@ -70,20 +73,13 @@ def Dijkstra(G, u, affected_nodes = True, old_S = True, old_L = True):
             x = u #x will be the node whose edges will be checked.
             start = 0 #Changing start to 0 because we will no longer be in the first node.
         else:
-            x = min(L_S, key=L_S.get) #Minimum of the weights
-            S.append(x)
+            x = min(L_S, key=L_S.get) #Selects the minimum of the weights and select that node to move to him.
+            S.append(x) #Indicates that this node is checked now.
 
         for v in G.vs["name"]: #For all the nodes in G.
             iteraciones +=1
             if v not in S: #If v hasn't been checked.
-                if L[str(v)][0] > L[str(x)][0] + w(G, str(x), str(v)):# and L[str(v)][0]!= float('inf') and L[str(x)][0] != float('inf'): #Mirar el caso de nodos no conectados al origen.
-                    L[str(v)][1].append(str(x))
-                    #L[str(v)] = [L[str(x)][0] + w(G, str(x), str(v)), L[str(v)][1]]#Updates weight of the edge and adds the route
-                    L[str(v)][0] = L[str(x)][0] + w(G, str(x), str(v))
+                if L[str(v)][0] > L[str(x)][0] + w(G, str(x), str(v)): #If the weight that are in L is greater than the route for a node we replace that.
+                    L[str(v)][1].append(str(x)) #If they are connected, we append in the predecessor list of v x.
+                    L[str(v)][0] = L[str(x)][0] + w(G, str(x), str(v)) #Updates weight of the edge and adds the route
     return L,S
-
-def actualizar_Dijkstra():
-    pass
-
-def compareGraph():
-    pass
