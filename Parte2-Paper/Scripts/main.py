@@ -116,8 +116,8 @@ def format_graph(t : list) -> Graph:
     return Graph.TupleList(new_t, weights = True)
 
 def simulations():
-    graph_sizes = [15,25,50,100,500,1000]
-    changes_ids =[2,10,50,100]
+    graph_sizes = [i for i in range(20,520,20)]
+    changes_ids =[10]
     times_reg = []
     nodes_reg = []
     changes_reg = []
@@ -138,7 +138,7 @@ def simulations():
 
 
     df = pd.DataFrame(data = {'# Nodes': nodes_reg, '# Cambios': changes_reg, 'Tiempo': times_reg, 'Iteraciones': iterations_reg})
-    df.to_csv('data.csv')
+    df.to_csv('nodevit.csv')
             
 
 def main():
