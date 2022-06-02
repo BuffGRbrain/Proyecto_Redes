@@ -3,7 +3,7 @@ from tokenize import Double
 from matplotlib.pyplot import plot
 from igraph import *
 from functools import cache
-from DJ import Dijkstra, get_path, list_graph_path,iteraciones, reset_iterations
+from DJ import Dijkstra, get_path, list_graph_path,iteraciones
 import pandas as pd
 import time
 import json
@@ -116,8 +116,8 @@ def format_graph(t : list) -> Graph:
     return Graph.TupleList(new_t, weights = True)
 
 def simulations():
-    graph_sizes = [i for i in range(20,520,20)]
-    changes_ids =[10]
+    graph_sizes = [i for i in range(20,720,20)]
+    changes_ids =[i for i in range(10, 110, 10)]
     times_reg = []
     nodes_reg = []
     changes_reg = []
@@ -138,7 +138,7 @@ def simulations():
 
 
     df = pd.DataFrame(data = {'# Nodes': nodes_reg, '# Cambios': changes_reg, 'Tiempo': times_reg, 'Iteraciones': iterations_reg})
-    df.to_csv('nodevit.csv')
+    df.to_csv('Data.csv')
             
 
 def main():
