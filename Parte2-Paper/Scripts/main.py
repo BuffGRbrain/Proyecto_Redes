@@ -3,7 +3,7 @@ from tokenize import Double
 from matplotlib.pyplot import plot
 from igraph import *
 from functools import cache
-from DJ import Dijkstra, get_path, list_graph_path,iteraciones
+from DJ import Dijkstra, get_path, list_graph_path,iteraciones, reset_iterations
 import pandas as pd
 import time
 import json
@@ -38,7 +38,7 @@ def loop_update(G:Graph, n:Double, changes:int)->None:
     df = print_route_tables(G,old_L,a[0])
 
     count = 0
-    df.to_csv(f'./simulations/{count}_N{len(G.vs)-1}_C{changes}.csv')
+    # df.to_csv(f'./simulations/{count}_N{len(G.vs)-1}_C{changes}.csv')
     while count<changes:#Here the graph is updated and the routing tables are recalculeted
         iteraciones += 1
         G, old, new = update_graph(G) #Changes the weights on some of the edges of the graph and saves the old and the new weights.
@@ -60,10 +60,10 @@ def loop_update(G:Graph, n:Double, changes:int)->None:
         # a = [u, v]
         old_L, old_S = Dijkstra(G, a[0],vertices_afectados,old_L,old_S) #Uses DIjkstra but keeping the past calculations that where not affected by the update. Only recalculating on the affected vertices.
         count +=1 #Another recalculation was made
-        df = print_route_tables(G,old_L,a[0],count)
-        df.to_csv(f'./simulations/{count}_N{len(G.vs)-1}_C{changes}.csv')
+        # df = print_route_tables(G,old_L,a[0],count)
+        # df.to_csv(f'./simulations/{count}_N{len(G.vs)-1}_C{changes}.csv')
 
-        time.sleep(n)#Sleep time till next update/change in the graph
+        # time.sleep(n)#Sleep time till next update/change in the graph
 
 #Input: g graph in igraph format, L a list of lists that represent the graph using the sparse matrix nodeA||nodeB||weight where A and B are adjacent nodes, u name of a node of the graph
 #and count a str to know in which table the data goes? check
@@ -116,16 +116,29 @@ def format_graph(t : list) -> Graph:
     return Graph.TupleList(new_t, weights = True)
 
 def simulations():
-    graph_sizes = [15,25,50,100]
-    changes_ids =[2,10]
-    times= []
+    graph_sizes = [15,25,50,100,500,1000]
+    changes_ids =[2,10,50,100]
+    times_reg = []
+    nodes_reg = []
+    changes_reg = []
+    iterations_reg = []
+    global iteraciones
 
     for changes in changes_ids:
         for nodes in graph_sizes:
+            print(f"Iteraciones: {iteraciones}")
             start_time = time.time()
             print(f"-----------------------\n--------- Nodos: {nodes} Cambios: {changes}------------\n---------------------------------")
-            loop_update(format_graph(radngraph.gen_graph(nodes)), 1, changes)
-            # times.append(time.time()- start_time())
+            loop_update(format_graph(radngraph.gen_graph(nodes)), 0, changes)
+            nodes_reg.append(nodes)
+            changes_reg.append(changes)
+            times_reg.append(time.time()- start_time)
+            iterations_reg.append(iteraciones)
+            iteraciones = 0
+
+
+    df = pd.DataFrame(data = {'# Nodes': nodes_reg, '# Cambios': changes_reg, 'Tiempo': times_reg, 'Iteraciones': iterations_reg})
+    df.to_csv('data.csv')
             
 
 def main():
