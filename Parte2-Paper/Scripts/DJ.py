@@ -37,14 +37,15 @@ def list_graph_path(G, u, L):
     all_paths={} #Dictionary with keys as the name of the node and values the path from u top that node.
     l = list(G.vs['name']) #List in which we have all the nodes of the graph.
     l.remove(str(u)) #Delete the initial node from the nodes to check.
+
     for i in l:
         global iteraciones
         iteraciones +=1
         path = get_path(L, str(u), str(i), []) #Find paths from u to all the nodes with get_path.
         path = path[::-1] #It inverse the path, this because geth_path returns the route list backwards.
         path.append(i) #Appends the destiny node to the list because get_path makes the list without him.
-        if L[i][0] == 0: #Float(inf). If the weight of the path is 0 is because there isn't any.
-            path = []
+        # if L[i][0] == 0: #Float(inf). If the weight of the path is 0 is because there isn't any.
+        #    path = []
             
         all_paths[i] = [path,L[i][0]] #Assign a path and a weight to their respective nodes.
     return all_paths 
