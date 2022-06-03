@@ -6,8 +6,6 @@ iteraciones = 0
 #Ouput: r a list of the nodes form the origin to the destiny node.
 
 def get_path(L, u, z, r=[]):
-    global iteraciones
-    iteraciones +=1
     
     lz = L[z][1] #It selects the first edge of the destiny node.
     r.append(lz[-1]) #Here it appends the previous node of the destiny node.
@@ -39,8 +37,6 @@ def list_graph_path(G, u, L):
     l.remove(str(u)) #Delete the initial node from the nodes to check.
 
     for i in l:
-        global iteraciones
-        iteraciones +=1
         path = get_path(L, str(u), str(i), []) #Find paths from u to all the nodes with get_path.
         path = path[::-1] #It inverse the path, this because geth_path returns the route list backwards.
         path.append(i) #Appends the destiny node to the list because get_path makes the list without him.

@@ -41,7 +41,7 @@ def gen_graph(n: int) -> list:
 def graph2csv(t:list) -> None: #Saca el grafo creado en un csv
     df = pd.DataFrame(t)
     df = df.set_axis(['Node A', 'Node B', 'Cost'], axis=1, inplace=False)
-    df.to_csv('graph.csv', index=False)
+    df.to_csv('./paths/graph.csv', index=False)
 
 #Input: name the string of the name of the file with the sparse matrix, that has the same characteristics as the one created above
 #Output: list of lists representing the graph via a sparse matrix
