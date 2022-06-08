@@ -6,6 +6,7 @@ from functools import cache
 from DJ import Dijkstra, get_path, list_graph_path,iteraciones
 import pandas as pd
 import time
+import copy
 import json
 import random
 import randGraph_csv_reader as radngraph
@@ -24,7 +25,7 @@ def update_graph(G):
     na = random.randint(0, len(G.es)) #random number  between 0 and the number of nodes the graph has
     ae = random.sample(list(G.es), na) #list->random size sample of edges of the graph 
     for i in ae: #Changes the weights randomly of the random sized sample created in ae
-        i['weight'] = random.randint(0, 15) 
+        i['weight'] = random.randint(1, 15)
     new_graph_weights = G.es['weight'] #Saves the new weights of the graph
     return G, old_graph_weights, new_graph_weights
 
@@ -32,11 +33,11 @@ def update_graph(G):
 #Output: None in python. 
 def loop_update(G:Graph, changes:int)->None:
     global iteraciones
+
     iteraciones +=1
     a = random.sample(G.vs['name'], 1) #Picks a random node in the graph
     old_L, old_S = Dijkstra(G,a[0]) #First dijkstra to know the state of the graph
     print_route_tables(G,old_L,a[0])
-
     count = 0
     # df.to_csv(f'./simulations/{count}_N{len(G.vs)-1}_C{changes}.csv')
     while count<changes:#Here the graph is updated and the routing tables are recalculeted
@@ -50,15 +51,15 @@ def loop_update(G:Graph, changes:int)->None:
         vertices_afectados = set({})
         for i in indices_diferencias:#Finding the vertices that where affected
             iteraciones += 1
-            vertices_afectados.add(G.es[i].source)
-            vertices_afectados.add(G.es[i].target)
+            vertices_afectados.add(G.vs[G.es[i].source]["name"])
+            vertices_afectados.add(G.vs[G.es[i].target]["name"])
 
         print('-----------------')
         #show_weihtges(G)
         #u = input('Nombre del nodo 1: ')
         #v = input('Nombre del nodo 2: ')
         # a = [u, v]
-        old_L, old_S = Dijkstra(G, a[0],vertices_afectados,old_L,old_S) #Uses DIjkstra but keeping the past calculations that where not affected by the update. Only recalculating on the affected vertices.
+        old_L, old_S = Dijkstra(G, a[0],vertices_afectados,old_S,old_L) #Uses DIjkstra but keeping the past calculations that where not affected by the update. Only recalculating on the affected vertices.
         count +=1 #Another recalculation was made
         print_route_tables(G,old_L,a[0],count)
         # df.to_csv(f'./simulations/{count}_N{len(G.vs)-1}_C{changes}.csv')
@@ -71,7 +72,7 @@ def loop_update(G:Graph, changes:int)->None:
 
 def print_route_tables(g,L,u,count='inicial'): 
     global iteraciones
-    grafo = g
+    grafo = copy.deepcopy(g)
     print(f"--- Tabla de enrutamiento {count}-----")
     print("|Origen| Destino | Remitir paquete a | Peso| ")
     # d = {'Origen': [], 'Destino': [], 'Remitir paquete a': [], 'Peso': []}

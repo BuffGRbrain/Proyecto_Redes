@@ -1,5 +1,5 @@
 {
-    "generate_graph":1,
+    "generate_graph":0,
     "nodes": 15,
     "changes": 20,
     "filename": "graph"

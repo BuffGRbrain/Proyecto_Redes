@@ -8,7 +8,7 @@ from random import *
 def gen_graph(n: int) -> list:
     l = [] #This will be the output
     lp = []#List to check for multiple edges, is a list of the edges in the graph
-    v = list(range(15,n+16)) #Names of the edges
+    v = list(range(1,n+1)) #Names of the edges
     root = choice(v)
     v.remove(root)
     pred = [root] #List of nodes in the graph
