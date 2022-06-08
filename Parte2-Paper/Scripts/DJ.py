@@ -49,9 +49,9 @@ def list_graph_path(G, u, L):
 #Input: G graph from iGraph, u an origin node and some boolean parameters that idk.
 #Output: l a list of lists that represent the graph using the sparse matrix nodeA||nodeB||weight where A and B are adjacent nodes.
 
-def Dijkstra(G, u, affected_nodes = True, old_S = True, old_L = True):
+def Dijkstra(G, u, affected_nodes = {}, old_S = {}, old_L = {}):
     global iteraciones
-    if old_S:
+    if not old_S:
         L = {i: [float('inf'), []] for i in G.vs["name"]} #Initializes all distances from u to any node in infinite.
         L[str(u)] = [0, []] #Changes value of distance from u to u to 0.
         S = [str(u)] #Now we append u to the list of checked nodes.
