@@ -49,8 +49,10 @@ def list_graph_path(G, u, L):
 #Input: G graph from iGraph, u an origin node and some boolean parameters that idk.
 #Output: l a list of lists that represent the graph using the sparse matrix nodeA||nodeB||weight where A and B are adjacent nodes.
 
-def Dijkstra(G, u, affected_nodes = {}, old_S = [], old_L = {}):
-    print(f"------------------------------------------dij")
+def Dijkstra(G, u, affected_nodes = [], old_S = [], old_L = {}):
+    #print(f"------------------------------------------dij")
+    print(affected_nodes)
+    print(old_S)
     global iteraciones
     L = {i: [float('inf'), []] for i in G.vs["name"]}  # Initializes all distances from u to any node in infinite.
     if not old_S:
@@ -58,26 +60,23 @@ def Dijkstra(G, u, affected_nodes = {}, old_S = [], old_L = {}):
         S = [str(u)] #Now we append u to the list of checked nodes.
     else:
         affected_nodes = [str(i) for i in affected_nodes]
-        puto = True
 
         #When we have to recalculate due to changes we use this case in which affected nodes is a set({}) of the affected nodes
         for node in old_S: #For each node in the past revision in the past dijkstra
+            print("NOOOOODO"+str(node))
             if node in affected_nodes:#for each affected node we make the recalculation
                     S = old_S[0:int(old_S.index(node)+1)]  #Creates the S list of checked nodes, usign slices and "cutting off" the affected nodes to be checked again
                     # L = {i: old_L[i] for i in S} #Saves the past weights that where not affected by the update in the graph, reducing calculations
                     for i in S:
                         L[i] = old_L[i]
                     print(f"si esto es menor a 15 esta mal ->: {len(L)}")
-                    puto = False
                     break
-        if puto:
-            raise "cali puto"
 
 
     start = 1
     while 1:
         L_S = {i: L[i][0] for i in L if i not in S} #Append to L_S all the nodes in L that have not been checked.
-        print(L_S)
+        #print(L_S)
         if not L_S: #If all nodes have been checked, it breaks, if not it continues.
             break 
         if start: #If we are in the first node, we asign u to x. 
