@@ -170,12 +170,12 @@ def main():
     g.vs["label"] = g.vs["name"]
     g.es["label"] = g.es["weight"]
     layout = g.layout("kk")
-    plot(g, layout=layout,target="Estado de la red inicial.png")
+    plot(g, layout=layout,target="NOMBRECHINGON.png")
     loop_update(g, 2, config["changes"])
     print(f"Total iteraciones = {iteraciones}")
     print("--- %s seconds ---" % (time.time() - start_time-4*2)) #Se restan 4*2 segundos porque ese fue el tiempo de espera para cambiar la información de las aristas.
 
 if __name__ == '__main__':
     main()
-    #simulations()
+    simulations()
     #print (os.path.exists("config.json"))
