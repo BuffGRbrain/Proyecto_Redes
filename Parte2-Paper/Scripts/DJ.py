@@ -1,5 +1,5 @@
 from igraph import *
-
+errorss = 0
 iteraciones = 0
 
 #Input: Graph L in dictionary format, initial node u, destiny node z.
@@ -54,6 +54,7 @@ def Dijkstra(G, u, affected_nodes = [], old_S = [], old_L = {}):
     print(affected_nodes)
     print(old_S)
     global iteraciones
+    global errorss
     L = {i: [float('inf'), []] for i in G.vs["name"]}  # Initializes all distances from u to any node in infinite.
     if not old_S:
         L[str(u)] = [0, []] #Changes value of distance from u to u to 0.
@@ -63,33 +64,36 @@ def Dijkstra(G, u, affected_nodes = [], old_S = [], old_L = {}):
 
         #When we have to recalculate due to changes we use this case in which affected nodes is a set({}) of the affected nodes
         for node in old_S: #For each node in the past revision in the past dijkstra
-            print("NOOOOODO"+str(node))
             if node in affected_nodes:#for each affected node we make the recalculation
                     S = old_S[0:int(old_S.index(node)+1)]  #Creates the S list of checked nodes, usign slices and "cutting off" the affected nodes to be checked again
                     # L = {i: old_L[i] for i in S} #Saves the past weights that where not affected by the update in the graph, reducing calculations
                     for i in S:
                         L[i] = old_L[i]
-                    print(f"si esto es menor a 15 esta mal ->: {len(L)}")
                     break
 
+    if S in locals():
+        start = 1
+        while 1:
+            L_S = {i: L[i][0] for i in L if i not in S} #Append to L_S all the nodes in L that have not been checked.
+            #print(L_S)
+            if not L_S: #If all nodes have been checked, it breaks, if not it continues.
+                break 
+            if start: #If we are in the first node, we asign u to x. 
+                x = u #x will be the node whose edges will be checked.
+                start = 0 #Changing start to 0 because we will no longer be in the first node.
+            else:
+                x = min(L_S, key=L_S.get) #Selects the minimum of the weights and select that node to move to him.
+                S.append(x) #Indicates that this node is checked now.
 
-    start = 1
-    while 1:
-        L_S = {i: L[i][0] for i in L if i not in S} #Append to L_S all the nodes in L that have not been checked.
-        #print(L_S)
-        if not L_S: #If all nodes have been checked, it breaks, if not it continues.
-            break 
-        if start: #If we are in the first node, we asign u to x. 
-            x = u #x will be the node whose edges will be checked.
-            start = 0 #Changing start to 0 because we will no longer be in the first node.
-        else:
-            x = min(L_S, key=L_S.get) #Selects the minimum of the weights and select that node to move to him.
-            S.append(x) #Indicates that this node is checked now.
+            for v in G.vs["name"]: #For all the nodes in G.
+                iteraciones +=1
+                if v not in S: #If v hasn't been checked.
+                    if L[str(v)][0] > L[str(x)][0] + w(G, str(x), str(v)): #If the weight that are in L is greater than the route for a node we replace that.
+                        L[str(v)][1].append(str(x)) #If they are connected, we append in the predecessor list of v x.
+                        L[str(v)][0] = L[str(x)][0] + w(G, str(x), str(v)) #Updates weight of the edge and adds the route
+        return L,S
 
-        for v in G.vs["name"]: #For all the nodes in G.
-            iteraciones +=1
-            if v not in S: #If v hasn't been checked.
-                if L[str(v)][0] > L[str(x)][0] + w(G, str(x), str(v)): #If the weight that are in L is greater than the route for a node we replace that.
-                    L[str(v)][1].append(str(x)) #If they are connected, we append in the predecessor list of v x.
-                    L[str(v)][0] = L[str(x)][0] + w(G, str(x), str(v)) #Updates weight of the edge and adds the route
-    return L,S
+    else:
+        errorss += 1
+        print("Grafo picho")
+        return old_L,old_S

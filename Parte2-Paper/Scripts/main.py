@@ -15,7 +15,7 @@ import os
 
 
 #This code requieres igraph 0.9.8
-#test
+
 
 #Input: G a graph from igraph
 #Output: G a graph from igraph updated, old_graph_weights and new_graph_weights to see the changes CHECK
