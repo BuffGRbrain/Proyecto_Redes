@@ -70,8 +70,8 @@ def Dijkstra(G, u, affected_nodes = [], old_S = [], old_L = {}):
                     for i in S:
                         L[i] = old_L[i]
                     break
-    tuplelocalsv = tuple(locals())
-    if S in tuplelocalsv:
+
+    if 'S' in locals():
         start = 1
         while 1:
             L_S = {i: L[i][0] for i in L if i not in S} #Append to L_S all the nodes in L that have not been checked.
