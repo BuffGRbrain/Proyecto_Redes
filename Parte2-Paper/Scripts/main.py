@@ -37,9 +37,16 @@ def loop_update(G:Graph, n:Double, changes:int)->None:
     iteraciones +=1
     a = random.sample(G.vs['name'], 1) #Picks a random node in the graph
     old_L, old_S = Dijkstra(G,a[0]) #First dijkstra to know the state of the graph
-    df = print_route_tables(G,old_L,a[0])
-
     count = 0
+
+    # Excel 
+    graphs = pd.ExcelWriter(f'./simulatios/Graph_{count}_N{len(G.vs)}_C{changes}.xlsx', engine = 'xlsxwriter')
+    trees = pd.ExcelWriter(f'./simulations/Tree_N_{count}_{len(G.vs)}_C{changes}.xlsx', engine = 'xlsxwriter')
+    df_graph = G.to_tuple_list()
+    df_graph.to_excel(graph, sheet_name = 'original')
+    df_tree = print_route_tables(G,old_L,a[0])
+    df_tree.to_excel(trees, sheet_name = 'original')
+
     # df.to_csv(f'./simulations/{count}_N{len(G.vs)-1}_C{changes}.csv')
     while count<changes:#Here the graph is updated and the routing tables are recalculeted
         iteraciones += 1
@@ -69,10 +76,16 @@ def loop_update(G:Graph, n:Double, changes:int)->None:
         # a = [u, v]
         old_L, old_S = Dijkstra(G, a[0],vertices_afectados,old_S,old_L) #Uses DIjkstra but keeping the past calculations that where not affected by the update. Only recalculating on the affected vertices.
         count +=1 #Another recalculation was made
-        # df = print_route_tables(G,old_L,a[0],count)
-        # df.to_csv(f'./simulations/{count}_N{len(G.vs)-1}_C{changes}.csv')
-
-        # time.sleep(n)#Sleep time till next update/change in the graph
+        df_graph = G.to_tuple_list()
+        df_graph.to_excel(graphs, sheet_name = f'it_{count}')
+        df_tree = print_route_tables(G,old_L,a[0],count)
+        df.tree.to_excel(trees, sheet_name = f'it_{count}')
+    trees.save()
+    trees.close()
+    graphs.save()
+    graphs.close()
+    # df.to_csv(f'./simulations/{count}_N{len(G.vs)-1}_C{changes}.csv')
+    # time.sleep(n)#Sleep time till next update/change in the graph
 
 #Input: g graph in igraph format, L a list of lists that represent the graph using the sparse matrix nodeA||nodeB||weight where A and B are adjacent nodes, u name of a node of the graph
 #and count a str to know in which table the data goes? check
@@ -125,8 +138,8 @@ def format_graph(t : list) -> Graph:
     return Graph.TupleList(new_t, weights = True)
 
 def simulations():
-    graph_sizes = [i for i in range(20,720,20)]
-    changes_ids =[i for i in range(10, 110, 10)]
+    graph_sizes = [i for i in range(20,100,20)]
+    changes_ids =[i for i in range(10, 30, 10)]
     times_reg = []
     nodes_reg = []
     changes_reg = []
@@ -152,7 +165,7 @@ def simulations():
 
 def main():
     start_time = time.time() #Starts the stopwatch to see how much time it took to execute and get the desired result
-    with open("config2.json", 'r') as f:
+    with open("config.json", 'r') as f:
         config = json.loads(f.read())
 
     print("Bienvenido a este algoritmo. Apartir de una red y mediante el uso de grafos, se hallarán las tablas de enrutamiento dinámicamente. \n Atención: Se guardarán imágenes de los grafos y caminos calculados en la misma carpeta.")
@@ -176,6 +189,6 @@ def main():
     print("--- %s seconds ---" % (time.time() - start_time-4*2)) #Se restan 4*2 segundos porque ese fue el tiempo de espera para cambiar la información de las aristas.
 
 if __name__ == '__main__':
-    main()
+    #main()
     simulations()
     #print (os.path.exists("config.json"))
