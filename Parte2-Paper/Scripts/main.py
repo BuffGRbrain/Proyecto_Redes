@@ -32,18 +32,21 @@ def update_graph(G):
 
 #Input: G graph from igraph, n time sleep till the next change, changes int number of random updates in the graph
 #Output: None in python. 
-def loop_update(G:Graph, n:Double, changes:int)->None:
+def loop_update(t:list, n:Double, changes:int)->None:
     global iteraciones
+    G = format_graph(t)
+
     iteraciones +=1
     a = random.sample(G.vs['name'], 1) #Picks a random node in the graph
     old_L, old_S = Dijkstra(G,a[0]) #First dijkstra to know the state of the graph
     count = 0
 
     # Excel 
-    graphs = pd.ExcelWriter(f'./simulatios/Graph_{count}_N{len(G.vs)}_C{changes}.xlsx', engine = 'xlsxwriter')
+    graphs = pd.ExcelWriter(f'./simulations/Graph_{count}_N{len(G.vs)}_C{changes}.xlsx', engine = 'xlsxwriter')
     trees = pd.ExcelWriter(f'./simulations/Tree_N_{count}_{len(G.vs)}_C{changes}.xlsx', engine = 'xlsxwriter')
-    df_graph = G.to_tuple_list()
-    df_graph.to_excel(graph, sheet_name = 'original')
+    df_graph = pd.DataFrame(t)
+    df_graph.set_axis(['Node A', 'Node B', 'Cost'], axis = 1, inplace = False)
+    df_graph.to_excel(graphs, sheet_name = 'original')
     df_tree = print_route_tables(G,old_L,a[0])
     df_tree.to_excel(trees, sheet_name = 'original')
 
@@ -76,7 +79,8 @@ def loop_update(G:Graph, n:Double, changes:int)->None:
         # a = [u, v]
         old_L, old_S = Dijkstra(G, a[0],vertices_afectados,old_S,old_L) #Uses DIjkstra but keeping the past calculations that where not affected by the update. Only recalculating on the affected vertices.
         count +=1 #Another recalculation was made
-        df_graph = G.to_tuple_list()
+        df_graph = pd.DataFrame(t)
+        df_graph.set_axis(['Node A', 'Node B', 'Cost'], axis = 1, inplace = False)
         df_graph.to_excel(graphs, sheet_name = f'it_{count}')
         df_tree = print_route_tables(G,old_L,a[0],count)
         df.tree.to_excel(trees, sheet_name = f'it_{count}')
@@ -151,7 +155,8 @@ def simulations():
             print(f"Iteraciones: {iteraciones}")
             start_time = time.time()
             print(f"-----------------------\n--------- Nodos: {nodes} Cambios: {changes}------------\n---------------------------------")
-            loop_update(format_graph(radngraph.gen_graph(nodes)), 0, changes)
+            t = radngraph.gen_graph(nodes)
+            loop_update(t, 0, changes)
             nodes_reg.append(nodes)
             changes_reg.append(changes)
             times_reg.append(time.time()- start_time)
@@ -159,7 +164,7 @@ def simulations():
             iteraciones = 0
 
 
-    df = pd.DataFrame(data = {'# Nodes': nodes_reg, '# Cambios': changes_reg, 'Tiempo': times_reg, 'Iteraciones': iterations_reg})
+    df = pd.DataFrame(data = {'# Nodes': nodes_reg, '# Changes': changes_reg, 'Time': times_reg, 'Iterations': iterations_reg})
     df.to_csv('Data.csv')
             
 
