@@ -1,9 +1,8 @@
-#!/usr/bin/python3
 from tokenize import Double
 from matplotlib.pyplot import plot
 from igraph import *
 from functools import cache
-from DJ import Dijkstra, get_path, list_graph_path,iteraciones
+from DJ import Dijkstra,iteraciones, to_disperse_matrix, get_routing_table
 import pandas as pd
 import time
 import json
@@ -17,6 +16,7 @@ import os
 #This code requieres igraph 0.9.8
 
 
+"""
 #Input: G a graph from igraph
 #Output: G a graph from igraph updated, old_graph_weights and new_graph_weights to see the changes CHECK
 def update_graph(G):
@@ -28,6 +28,22 @@ def update_graph(G):
     for i in ae: #Changes the weights randomly of the random sized sample created in ae
         i['weight'] = random.randint(1, 15) 
     new_graph_weights = G.es['weight'] #Saves the new weights of the graph
+    return G, old_graph_weights, new_graph_weights
+"""
+
+
+def update_graph(t : list):
+    # Input: t list of tuples with the graph
+    # Output: G graph from igraph, old_graph_weights and new_graph_weights to see the changes
+    global iteraciones
+    old_graph_weights = [i[2] for i in t]
+    to_change = random.sample(t, random.randint(1, len(t))) #random number  between 0 and the number of nodes the graph has
+    for i in to_change: #Changes the weights randomly of the random sized sample created in ae
+        index = t.index(i)
+        t[index] = (i[0], i[1], random.randint(1, 15))
+        iteraciones += 1
+    new_graph_weights = [i[2] for i in t]
+    G = format_graph(t)
     return G, old_graph_weights, new_graph_weights
 
 #Input: G graph from igraph, n time sleep till the next change, changes int number of random updates in the graph
@@ -47,13 +63,13 @@ def loop_update(t:list, n:Double, changes:int)->None:
     df_graph = pd.DataFrame(t)
     df_graph.set_axis(['Node A', 'Node B', 'Cost'], axis = 1, inplace = False)
     df_graph.to_excel(graphs, sheet_name = 'original')
-    df_tree = print_route_tables(G,old_L,a[0])
+    df_tree = print_route_tables(t,old_L,a[0])
     df_tree.to_excel(trees, sheet_name = 'original')
 
     # df.to_csv(f'./simulations/{count}_N{len(G.vs)-1}_C{changes}.csv')
     while count<changes:#Here the graph is updated and the routing tables are recalculeted
         iteraciones += 1
-        G, old, new = update_graph(G) #Changes the weights on some of the edges of the graph and saves the old and the new weights.
+        G, old, new = update_graph(t) #Changes the weights on some of the edges of the graph and saves the old and the new weights.
         print(old)
         print(new)
         #From here we detect the changes on the graph and make the correspondent calculations
@@ -64,8 +80,8 @@ def loop_update(t:list, n:Double, changes:int)->None:
         vertices_afectados1 = []
         for i in indices_diferencias:#Finding the vertices that where affected
             iteraciones += 1
-            vertices_afectados1.append(str(G.es[i].source))
-            vertices_afectados1.append(str(G.es[i].target))
+            vertices_afectados1.append(str(G.vs[G.es[i].source]['name']))
+            vertices_afectados1.append(str(G.vs[G.es[i].target]['name']))
 
         vertices_afectados = []
         for i in vertices_afectados1: 
@@ -82,8 +98,8 @@ def loop_update(t:list, n:Double, changes:int)->None:
         df_graph = pd.DataFrame(t)
         df_graph.set_axis(['Node A', 'Node B', 'Cost'], axis = 1, inplace = False)
         df_graph.to_excel(graphs, sheet_name = f'it_{count}')
-        df_tree = print_route_tables(G,old_L,a[0],count)
-        df.tree.to_excel(trees, sheet_name = f'it_{count}')
+        df_tree = print_route_tables(t,old_L,a[0],count)
+        df_tree.to_excel(trees, sheet_name = f'it_{count}')
     trees.save()
     trees.close()
     graphs.save()
@@ -91,6 +107,7 @@ def loop_update(t:list, n:Double, changes:int)->None:
     # df.to_csv(f'./simulations/{count}_N{len(G.vs)-1}_C{changes}.csv')
     # time.sleep(n)#Sleep time till next update/change in the graph
 
+"""
 #Input: g graph in igraph format, L a list of lists that represent the graph using the sparse matrix nodeA||nodeB||weight where A and B are adjacent nodes, u name of a node of the graph
 #and count a str to know in which table the data goes? check
 #Output: None in python, but it shows the routing tables in the console.
@@ -136,6 +153,18 @@ def print_route_tables(g,L,u,count='inicial'):
     g.es["label"] = g.es["weight"]
     plot(grafo, layout=layout,target= f"Este es el camino más corto en la actualización {count}.png")
     return df
+"""
+def print_route_tables(t : list,L : dict,u : str,count='initial'):
+    print(f"--- Tabla de enrutamiento {count}-----")
+    rt = get_routing_table(t,L, u)
+    print(rt.to_markdown())
+    tree = to_disperse_matrix(t, L)
+    g = format_graph(tree)
+    layout = g.layout("kk")
+    g.vs["label"] = g.vs["name"]
+    g.es["label"] = g.es["weight"]
+    plot(g, layout=layout, target=f"Shortest path on update {count}.png")
+    return rt
 
 def format_graph(t : list) -> Graph:
     new_t = [(str(i[0]), str(i[1]), i[2]) for i in t]
