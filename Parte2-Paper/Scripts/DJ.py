@@ -94,34 +94,41 @@ def Dijkstra(G, u, affected_nodes = [], old_S = [], old_L = {}):
     global iteraciones
     global errorss
     L = {i: [float('inf'), []] for i in G.vs["name"]}  # Initializes all distances from u to any node in infinite.
+    L[str(u)] = [0, []]  # Changes value of distance from u to u to 0.
+    start2 = False
     if not old_S:
-        L[str(u)] = [0, []] #Changes value of distance from u to u to 0.
         S = [str(u)] #Now we append u to the list of checked nodes.
         start = True
     else:
-        affected_nodes = [str(i) for i in affected_nodes]
+        #affected_nodes = [str(i) for i in affected_nodes]
         start = False
         #When we have to recalculate due to changes we use this case in which affected nodes is a set({}) of the affected nodes
-        for node in old_S: #For each node in the past revision in the past dijkstra
-            if node in affected_nodes:#for each affected node we make the recalculation
-                    # S = old_S[0:int(old_S.index(node)+1)]  #Creates the S list of checked nodes, usign slices and "cutting off" the affected nodes to be checked again
-                    S = old_S # Puede que este mal
-                    # L = {i: old_L[i] for i in S} #Saves the past weights that where not affected by the update in the graph, reducing calculations
-                    for i in S:
-                        L[i] = old_L[i]
-                    break
+
+        S = []
+        for i in old_L:
+            if i in affected_nodes:
+                L[i] = [float('inf'), []]
+        for i in old_S:
+            if L[i][0] != float('inf'):
+                S.append(i)
+        start2 = True
 
     if 'S' in locals():
         while 1:
             L_S = {i: L[i][0] for i in L if i not in S} #Append to L_S all the nodes in L that have not been checked.
-            #print(L_S)
+            # print(f"LS: {L_S} PUTA LISTA")
             if not L_S: #If all nodes have been checked, it breaks, if not it continues.
                 break 
             if start: #If we are in the first node, we asign u to x. 
                 x = u #x will be the node whose edges will be checked.
                 start = False #Changing start to 0 because we will no longer be in the first node.
+            elif start2:
+                x = S[-1]
+                start2 = False
             else:
-                x = min(L_S, key=L_S.get) #Selects the minimum of the weights and select that node to move to him.
+                x = min(L_S, key=L_S.get) #Selects the minimum of the weights and select that node to move to him
+                if L[x][0] == float('inf'):
+                    raise Exception("No path found")
                 S.append(x) #Indicates that this node is checked now.
 
             for v in G.vs["name"]: #For all the nodes in G.
