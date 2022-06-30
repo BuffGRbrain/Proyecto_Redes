@@ -1,228 +1,190 @@
-from tokenize import Double
 from matplotlib.pyplot import plot
 from igraph import *
-from functools import cache
-from DJ import Dijkstra,iteraciones, to_disperse_matrix, get_routing_table
+from DJ import Dijkstra, to_disperse_matrix, get_routing_table
 import pandas as pd
-import time
 import json
 import random
-import randGraph_csv_reader as radngraph
+import randGraph_csv_reader as randgraph
 import time
 
-import os
+
+def plot_graph(g: Graph, path: str, name: str) -> None:
+    # Input: g: graph from igraph, path: path to the file, name: name of the file.
+    # Output: None
+    # Plots the graph in the path with the name
+    g.vs["label"] = g.vs["name"]
+    g.es["label"] = g.es["weight"]
+    layout = g.layout("kk")
+    plot(g, layout=layout, target=f"./{path}/{name}.png")
 
 
-#This code requieres igraph 0.9.8
-
-
-"""
-#Input: G a graph from igraph
-#Output: G a graph from igraph updated, old_graph_weights and new_graph_weights to see the changes CHECK
-def update_graph(G):
-    global iteraciones #Number of total iterations in the code till the desired ouput was obtained
-    iteraciones += 1
-    old_graph_weights = G.es['weight'] #Saves the old weights of the graph
-    na = random.randint(1, len(G.es)) #random number  between 0 and the number of nodes the graph has
-    ae = random.sample(list(G.es), na) #list->random size sample of edges of the graph 
-    for i in ae: #Changes the weights randomly of the random sized sample created in ae
-        i['weight'] = random.randint(1, 15) 
-    new_graph_weights = G.es['weight'] #Saves the new weights of the graph
-    return G, old_graph_weights, new_graph_weights
-"""
-
-
-def update_graph(t : list):
+def update_graph(t: list, count='initial') -> (Graph, list, list):
     # Input: t list of tuples with the graph
     # Output: G graph from igraph, old_graph_weights and new_graph_weights to see the changes
-    global iteraciones
+    # Updates the graph and returns the new graph and the old and new weights of the edges.
     old_graph_weights = [i[2] for i in t]
-    to_change = random.sample(t, random.randint(1, len(t))) #random number  between 0 and the number of nodes the graph has
-    for i in to_change: #Changes the weights randomly of the random sized sample created in ae
+    to_change = random.sample(t, random.randint(1,
+                                                len(t) // 3))  # random number  between 0 and a third of the number of nodes the graph has
+    for i in to_change:  # Changes the weights randomly of the random sized sample created in ae
         index = t.index(i)
-        t[index] = (i[0], i[1], random.randint(1, 15))
-        iteraciones += 1
+        t[index] = [i[0], i[1], random.randint(1, 15)]
     new_graph_weights = [i[2] for i in t]
     G = format_graph(t)
+
+    if bool(config["plot"]):
+        plot_graph(G, "graphs", f"Graph {count}")
     return G, old_graph_weights, new_graph_weights
 
-#Input: G graph from igraph, n time sleep till the next change, changes int number of random updates in the graph
-#Output: None in python. 
-def loop_update(t:list, n:Double, changes:int)->None:
-    global iteraciones
-    G = format_graph(t)
+def loop_update(t: list, changes: int) -> int:
+    # Input: G graph from igraph, changes int number of random updates in the graph
+    # Output: None in python.
+    # Loops the update function for the number of changes specified, saving states in excel files.
 
-    iteraciones +=1
-    a = random.sample(G.vs['name'], 1) #Picks a random node in the graph
-    old_L, old_S = Dijkstra(G,a[0]) #First dijkstra to know the state of the graph
+    iterations = 0
+    G = format_graph(t)
+    a = random.sample(G.vs['name'], 1)  # Picks a random node in the graph
+    old_L, old_S, iterations = Dijkstra(G, a[0])  # First dijkstra to know the state of the graph
     count = 0
 
     # Excel 
-    graphs = pd.ExcelWriter(f'./simulations/Graph_{count}_N{len(G.vs)}_C{changes}.xlsx', engine = 'xlsxwriter')
-    trees = pd.ExcelWriter(f'./simulations/Tree_N_{count}_{len(G.vs)}_C{changes}.xlsx', engine = 'xlsxwriter')
+    graphs = pd.ExcelWriter(f'./simulations/Graph_N{len(G.vs)}_C{changes}.xlsx', engine='xlsxwriter')
+    trees = pd.ExcelWriter(f'./simulations/Tree_N{len(G.vs)}_C{changes}.xlsx', engine='xlsxwriter')
+    rts = pd.ExcelWriter(f'./simulations/RT_N{len(G.vs)}_C{changes}.xlsx', engine='xlsxwriter')
+
     df_graph = pd.DataFrame(t)
-    df_graph.set_axis(['Node A', 'Node B', 'Cost'], axis = 1, inplace = False)
-    df_graph.to_excel(graphs, sheet_name = 'original')
-    df_tree = print_route_tables(t,old_L,a[0])
-    df_tree.to_excel(trees, sheet_name = 'original')
+    df_graph.set_axis(['Node A', 'Node B', 'Cost'], axis=1, inplace=False)
+    df_route, df_tree = print_route_tables(t, old_L, a[0])
 
-    # df.to_csv(f'./simulations/{count}_N{len(G.vs)-1}_C{changes}.csv')
-    while count<changes:#Here the graph is updated and the routing tables are recalculeted
-        iteraciones += 1
-        G, old, new = update_graph(t) #Changes the weights on some of the edges of the graph and saves the old and the new weights.
-        print(old)
-        print(new)
-        #From here we detect the changes on the graph and make the correspondent calculations
-        indices_diferencias = [i for i in range(len(old)) if old[i]!=new[i]] #Compare the old and the new weights to find the indices of the weights that changed and using this, we can find what edges changed
-        #edges = [G.es[i] for i in indices_diferencias] #Para tener las aristas que se cambiaron
-        #print(edges) #Esto debe imprimir objetos de igraph
-        #Now we use the indices to find the correspondent edges and with them we save both of the nodes connected to that edge to the a set to know whitch vertices route should be recalculated
-        vertices_afectados1 = []
-        for i in indices_diferencias:#Finding the vertices that where affected
-            iteraciones += 1
-            vertices_afectados1.append(str(G.vs[G.es[i].source]['name']))
-            vertices_afectados1.append(str(G.vs[G.es[i].target]['name']))
+    df_graph.to_excel(graphs, sheet_name='original')
+    df_tree.to_excel(trees, sheet_name='original')
+    df_route.to_excel(rts, sheet_name='original')
 
-        vertices_afectados = []
-        for i in vertices_afectados1: 
-            if i not in vertices_afectados: 
-                vertices_afectados.append(i) 
+    while count < changes:  # Here the graph is updated and the routing tables are recalculeted
+        G, old, new = update_graph(t,
+                                   count + 1)  # Changes the weights on some of the edges of the graph and saves the old and the new weights.
+        # From here we detect the changes on the graph and make the correspondent calculations
+        diff = [i for i in range(len(old)) if old[i] != new[i]]  # Compare the old and the new weights to find the indices of the weights that changed and using this, we can find what edges changed
+        # Now we use the indices to find the correspondent edges and with them we save both of the nodes connected to that edge to the a set to know whitch vertices route should be recalculated
+        dv = [G.es[i] for i in diff]
+        affected_nodes_rep = []
+        affected_nodes = []
+
+        for i in dv:
+            affected_nodes_rep.append(G.vs[i.source]['name'])
+            affected_nodes_rep.append(G.vs[i.target]['name'])
+
+        for i in affected_nodes_rep:
+            if i not in affected_nodes:
+                affected_nodes.append(i)
 
         print('-----------------')
-        #show_weihtges(G)
-        #u = input('Nombre del nodo 1: ')
-        #v = input('Nombre del nodo 2: ')
-        # a = [u, v]
-        old_L, old_S = Dijkstra(G, a[0],vertices_afectados,old_S,old_L) #Uses DIjkstra but keeping the past calculations that where not affected by the update. Only recalculating on the affected vertices.
-        count +=1 #Another recalculation was made
+        if a[0] in affected_nodes:
+            old_L, old_S, iterations = Dijkstra(G, a[0], iterations)
+        else:
+            old_L, old_S, iterations = Dijkstra(G, a[0], iterations, affected_nodes, old_S, old_L)  # Uses DIjkstra but keeping the past calculations that where not affected by the update. Only recalculating on the affected vertices.
+        count += 1  # Another recalculation was made
+
+        # Excel
         df_graph = pd.DataFrame(t)
-        df_graph.set_axis(['Node A', 'Node B', 'Cost'], axis = 1, inplace = False)
-        df_graph.to_excel(graphs, sheet_name = f'it_{count}')
-        df_tree = print_route_tables(t,old_L,a[0],count)
-        df_tree.to_excel(trees, sheet_name = f'it_{count}')
+        df_graph.set_axis(['Node A', 'Node B', 'Cost'], axis=1, inplace=False)
+        df_route, df_tree = print_route_tables(t, old_L, a[0], count)
+
+        df_graph.to_excel(graphs, sheet_name=f'it_{count}')
+        df_tree.to_excel(trees, sheet_name=f'it_{count}')
+        df_route.to_excel(rts, sheet_name=f'it_{count}')
+
     trees.save()
     trees.close()
     graphs.save()
     graphs.close()
-    # df.to_csv(f'./simulations/{count}_N{len(G.vs)-1}_C{changes}.csv')
-    # time.sleep(n)#Sleep time till next update/change in the graph
+    rts.save()
+    rts.close()
+    return iterations
 
-"""
-#Input: g graph in igraph format, L a list of lists that represent the graph using the sparse matrix nodeA||nodeB||weight where A and B are adjacent nodes, u name of a node of the graph
-#and count a str to know in which table the data goes? check
-#Output: None in python, but it shows the routing tables in the console.
 
-def print_route_tables(g,L,u,count='inicial'): 
-    global iteraciones
-    grafo = g
-    print(f"--- Tabla de enrutamiento {count}-----")
-    print("|Origen| Destino | Remitir paquete a | Peso| ")
-    d = {'Origen': [], 'Destino': [], 'Remitir paquete a': [], 'Peso': []}
-    all_paths = list_graph_path(grafo,u,L) #paths from u to all nodes in a dictionary.
-    for path in all_paths: #For each node in the graph different from u.
-        iteraciones += 1
-        try:
-            print(f"|{u}    |{path}       |         {all_paths[path][0][1]}        |  {all_paths[path][1]} |") #The last two elements of this print are: the first node in the path from  u to z and second is the total weight of that path.
-        except:
-            print(path)
-            print(all_paths[path])
-            raise
+def print_route_tables(t: list, L: dict, u: str, count='initial') -> (pd.DataFrame, pd.DataFrame):
+    # Input: t list of tuples with the graph, L dictionary with the L Dijkstra output, u string with the node to
+    # start from
+    # Output: df_route pd.DataFrame with the routing table, df_tree pd.DataFrame with the tree graph
+    # Prints and saves the routing table (and saves the tree graph)
 
-        d['Origen'].append(u)
-        d['Destino'].append(path)
-        d['Remitir paquete a'].append(all_paths[path][0][1])
-        d['Peso'].append(all_paths[path][1])
-
-    df = pd.DataFrame(data = d)
-
-    al = list(all_paths.values()) #Lists of lists with each list containing the path from u to z in a list and the total weight of the path.
-    paths = [i[0] for i in al] #A list of lists with each list having a path from u to any node in the graph
-    ##Creates png of the route in a reduced graph
-    AU = []
-    for i in paths:
-        for j in range(len(i)-1): #Taking the nodes of each route
-            iteraciones += 1
-            AU.append(grafo.get_eid(str(i[j]), str(i[j+1]))) #Toma cada ruta y va agregando a AU los ids de las aristas que se usan en cada ruta.
-    AU = list(set(AU)) #Eliminan ids repetidos.
-    AU = [grafo.es[i] for i in AU] #Using the id we get the object edge from igraph
-    NU = [i for i in grafo.es if i not in AU]
-    grafo.delete_edges(NU)
-    ##Creates png of the route in a reduced graph
-    layout = grafo.layout("kk")
-    g.vs["label"] = g.vs["name"]
-    g.es["label"] = g.es["weight"]
-    plot(grafo, layout=layout,target= f"Este es el camino más corto en la actualización {count}.png")
-    return df
-"""
-def print_route_tables(t : list,L : dict,u : str,count='initial'):
-    print(f"--- Tabla de enrutamiento {count}-----")
-    rt = get_routing_table(t,L, u)
-    print(rt.to_markdown())
+    print(f"--- Routing Table {count}-----")
+    df_rt = get_routing_table(t, L, u)
+    print(df_rt.to_markdown())
     tree = to_disperse_matrix(t, L)
-    g = format_graph(tree)
-    layout = g.layout("kk")
-    g.vs["label"] = g.vs["name"]
-    g.es["label"] = g.es["weight"]
-    plot(g, layout=layout, target=f"Shortest path on update {count}.png")
-    return rt
+    df_tree = pd.DataFrame(t)
+    df_tree.set_axis(['Node A', 'Node B', 'Cost'], axis=1, inplace=False)
+    if bool(config["plot"]):
+        g = format_graph(tree)
+        plot_graph(g, "paths", f"Tree {count}")
+    return df_rt, df_tree
 
-def format_graph(t : list) -> Graph:
+
+def format_graph(t: list) -> Graph:
+    # Input: t list of tuples with the graph
+    # Output: G Graph from igraph
     new_t = [(str(i[0]), str(i[1]), i[2]) for i in t]
-    return Graph.TupleList(new_t, weights = True)
+    return Graph.TupleList(new_t, weights=True)
 
-def simulations():
-    graph_sizes = [i for i in range(20,100,20)]
-    changes_ids =[i for i in range(10, 30, 10)]
+
+def simulations() -> None:
+    # Input: None
+    # Output: None
+    # Runs the simulations
+    global config
+    config = {"plot": False}
+    graph_sizes = [i for i in range(20, 100, 20)]
+    changes_ids = [i for i in range(10, 30, 10)]
     times_reg = []
     nodes_reg = []
     changes_reg = []
     iterations_reg = []
-    global iteraciones
 
     for changes in changes_ids:
         for nodes in graph_sizes:
-            print(f"Iteraciones: {iteraciones}")
             start_time = time.time()
-            print(f"-----------------------\n--------- Nodos: {nodes} Cambios: {changes}------------\n---------------------------------")
-            t = radngraph.gen_graph(nodes)
-            loop_update(t, 0, changes)
+            print(
+                f"-----------------------\n--------- Nodos: {nodes} Cambios: {changes}------------\n---------------------------------")
+            t = randgraph.gen_graph(nodes)
+            iterations = loop_update(t, changes)
             nodes_reg.append(nodes)
             changes_reg.append(changes)
-            times_reg.append(time.time()- start_time)
-            iterations_reg.append(iteraciones)
-            iteraciones = 0
+            times_reg.append(time.time() - start_time)
+            iterations_reg.append(iterations)
 
-
-    df = pd.DataFrame(data = {'# Nodes': nodes_reg, '# Changes': changes_reg, 'Time': times_reg, 'Iterations': iterations_reg})
+    df = pd.DataFrame(
+        data={'# Nodes': nodes_reg, '# Changes': changes_reg, 'Time': times_reg, 'Iterations': iterations_reg})
     df.to_csv('Data.csv')
-            
 
-def main():
-    start_time = time.time() #Starts the stopwatch to see how much time it took to execute and get the desired result
-    with open("config.json", 'r') as f:
-        config = json.loads(f.read())
 
-    print("Bienvenido a este algoritmo. Apartir de una red y mediante el uso de grafos, se hallarán las tablas de enrutamiento dinámicamente. \n Atención: Se guardarán imágenes de los grafos y caminos calculados en la misma carpeta.")
+def main() -> None:
+    # Input: None
+    # Output: None
+    # Runs the main program
+    start_time = time.time()
+    with open("config.json") as file:
+        global config
+        config = json.load(file)
+        print("Current config:")
+        for i in config:
+            print(f"{i}: {config[i]}")
+
     if bool(config["generate_graph"]):
-        n = config["nodes"]
-        # changes = int(input("Ingrese el número de cambios a realizar"))#Falta pasarselo al loop_update 
-        t  = radngraph.gen_graph(n)
-        radngraph.graph2csv(t)
+        print("Generating graph...")
+        t = randgraph.gen_graph(config["nodes"])
+        print("Graph generated")
     else:
-        # a = input('Por favor ingrese el nombre del archivo de donde se generara el grafo(sin ".csv"): ')
-        # b = a + '.csv'
-        t = radngraph.import_graph(config["filename"] +".csv")
+        print("Loading graph...")
+        t = randgraph.import_graph(config["graph_path"])
+        print("Graph loaded")
 
     g = format_graph(t)
-    g.vs["label"] = g.vs["name"]
-    g.es["label"] = g.es["weight"]
-    layout = g.layout("kk")
-    plot(g, layout=layout,target="NOMBRECHINGON.png")
-    loop_update(g, 2, config["changes"])
-    print(f"Total iteraciones = {iteraciones}")
-    print("--- %s seconds ---" % (time.time() - start_time-4*2)) #Se restan 4*2 segundos porque ese fue el tiempo de espera para cambiar la información de las aristas.
+    if bool(config["plot"]):
+        plot_graph(g, "graphs", "Graph initial")
+    iterations = loop_update(t, config["changes"])
+    print(f"Time: {time.time() - start_time}")
+    print(f"Total Iterations: {iterations}")
 
 if __name__ == '__main__':
-    #main()
-    simulations()
-    #print (os.path.exists("config.json"))
+    main()
+    # simulations()
