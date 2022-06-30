@@ -1,5 +1,4 @@
-#from tkinter import W
-#from tk import W
+
 from igraph import *
 import pandas as pd
 from random import *
