@@ -133,8 +133,8 @@ def simulations() -> None:
     # Runs the simulations
     global config
     config = {"plot": False}
-    graph_sizes = [i for i in range(20, 100, 20)]
-    changes_ids = [i for i in range(10, 30, 10)]
+    graph_sizes = [i for i in range(20, 720, 20)]
+    changes_ids = [i for i in range(10, 110, 10)]
     times_reg = []
     nodes_reg = []
     changes_reg = []
@@ -186,5 +186,5 @@ def main() -> None:
     print(f"Total Iterations: {iterations}")
 
 if __name__ == '__main__':
-    main()
-    # simulations()
+    # main()
+    simulations()
