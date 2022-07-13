@@ -109,39 +109,34 @@ dict, list, int):
                 S.append(i)
         start2 = True
 
-    if 'S' in locals():
-        while 1:
-            L_S = {i: L[i][0] for i in L if i not in S}  # Append to L_S all the nodes in L that have not been checked.
-            # print(f"LS: {L_S} PUTA LISTA")
-            if not L_S:  # If all nodes have been checked, it breaks, if not it continues.
-                break
-            if start:  # If we are in the first node, we asign u to x.
-                x = u  # x will be the node whose edges will be checked.
-                start = False  # Changing start to 0 because we will no longer be in the first node.
-            elif start2:
-                x = S[-1]
-                start2 = False
-            else:
-                x = min(L_S, key=L_S.get)  # Selects the minimum of the weights and select that node to move to him
-                if L[x][0] == float('inf'):
-                    raise Exception("No path found")
-                S.append(x)  # Indicates that this node is checked now.
+    while 1:
+        L_S = {i: L[i][0] for i in L if i not in S}  # Append to L_S all the nodes in L that have not been checked.
+        # print(f"LS: {L_S} PUTA LISTA")
+        if not L_S:  # If all nodes have been checked, it breaks, if not it continues.
+            break
+        if start:  # If we are in the first node, we asign u to x.
+            x = u  # x will be the node whose edges will be checked.
+            start = False  # Changing start to 0 because we will no longer be in the first node.
+        elif start2:
+            x = S[-1]
+            start2 = False
+        else:
+            x = min(L_S, key=L_S.get)  # Selects the minimum of the weights and select that node to move to him
+            if L[x][0] == float('inf'):
+                raise Exception("No path found")
+            S.append(x)  # Indicates that this node is checked now.
 
-            for v in G.vs["name"]:  # For all the nodes in G.
-                iterations += 1
-                if v not in S:  # If v hasn't been checked.
-                    if L[str(v)][0] > L[str(x)][0] + w(G, str(x),
-                                                       str(v)):  # If the weight that are in L is greater than the route for a node we replace that.
-                        try:
-                            L[str(v)][1].pop()
-                        except:
-                            pass
-                        L[str(v)][1].append(str(x))  # If they are connected, we append in the predecessor list of v x.
-                        L[str(v)][0] = L[str(x)][0] + w(G, str(x),
-                                                        str(v))  # Updates weight of the edge and adds the route
-        return L, S, iterations
+        for v in G.vs["name"]:  # For all the nodes in G.
+            iterations += 1
+            if v not in S:  # If v hasn't been checked.
+                if L[str(v)][0] > L[str(x)][0] + w(G, str(x),
+                                                   str(v)):  # If the weight that are in L is greater than the route for a node we replace that.
+                    try:
+                        L[str(v)][1].pop()
+                    except:
+                        pass
+                    L[str(v)][1].append(str(x))  # If they are connected, we append in the predecessor list of v x.
+                    L[str(v)][0] = L[str(x)][0] + w(G, str(x),
+                                                    str(v))  # Updates weight of the edge and adds the route
+    return L, S, iterations
 
-    else:
-        errorss += 1
-        print("Grafo picho")
-        return old_L, old_S
